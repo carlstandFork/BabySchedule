@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">BabySchedule</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_left_fragment">Hello left fragment</string>
+    <string name="hello_right_fragment">Hello right fragment</string>
+    <string name="eat">吃饭</string>
+    <string name="poo">拉屎</string>
+    <string name="sleep">睡觉</string>
+    <string name="hello_eat_fragment">Hello eat fragment</string>
+
+</resources>
