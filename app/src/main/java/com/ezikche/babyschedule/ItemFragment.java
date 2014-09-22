@@ -8,14 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
 
-import com.ezikche.babyschedule.dummy.DummyContent;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -49,7 +47,8 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
      * The Adapter which will be used to populate the ListView/GridView with
      * Views.
      */
-    private ListAdapter mAdapter;
+    private ItemListAdapter mAdapter;
+    private List<String> mStringList;
 
     // TODO: Rename and change types of parameters
     public static ItemFragment newInstance(String param1, String param2) {
@@ -78,11 +77,8 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
         }
 
         // TODO: Change Adapter to display your content
-        List<String> list = new ArrayList<String>();
-        list.add("吃饭");
-        list.add("拉屎");
-        list.add("睡觉");
-        mAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1, list);
+        mStringList = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.actions)));
+        mAdapter = new ItemListAdapter<String>(getActivity(),android.R.layout.simple_list_item_1, mStringList);
     }
 
     @Override
@@ -123,7 +119,7 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
         if (null != mListener) {
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
-            mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id, position);
+            mListener.onFragmentInteraction(mStringList.get(position), position);
         }
     }
 

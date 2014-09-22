@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link EatFragment.OnFragmentInteractionListener} interface
+ * {@link EatFragment.OnRightFragmentInteractionListener} interface
  * to handle interaction events.
  * Use the {@link EatFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -27,7 +27,7 @@ public class EatFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
+    private OnRightFragmentInteractionListener mListener;
 
     /**
      * Use this factory method to create a new instance of
@@ -69,7 +69,7 @@ public class EatFragment extends Fragment {
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener.onButtonPressed(uri);
         }
     }
 
@@ -77,10 +77,10 @@ public class EatFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 //        try {
-//            mListener = (OnFragmentInteractionListener) activity;
+//            mListener = (OnRightFragmentInteractionListener) activity;
 //        } catch (ClassCastException e) {
 //            throw new ClassCastException(activity.toString()
-//                    + " must implement OnFragmentInteractionListener");
+//                    + " must implement OnRightFragmentInteractionListener");
 //        }
     }
 
@@ -100,9 +100,9 @@ public class EatFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
+    public interface OnRightFragmentInteractionListener {
         // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
+        public void onButtonPressed(Uri uri);
     }
 
 }
