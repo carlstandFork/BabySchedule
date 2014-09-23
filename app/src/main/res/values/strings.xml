@@ -6,6 +6,12 @@
         <item>睡觉</item>
     </string-array>
 
+    <string-array name="dialogMsg">
+        <item>宝宝吃了多少毫升奶？</item>
+        <item>宝宝拉了多少屎？</item>
+        <item>宝宝睡了几分钟？</item>
+    </string-array>
+
     <string name="app_name">BabySchedule</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
