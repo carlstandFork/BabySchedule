@@ -8,14 +8,23 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.DatePicker;
 import android.widget.NumberPicker;
+import android.widget.TimePicker;
 import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 
 public class MainActivity extends Activity
@@ -73,19 +82,18 @@ public class MainActivity extends Activity
         builder.setTitle(actions[mCurrentAct])
                 .setMessage(messages[mCurrentAct]);
 // 2. Chain together various setter methods to set the dialog characteristics
+        final NumberPicker picker = new ColorNumberPicker(getApplicationContext());
 
+        int NUMBER_OF_VALUES = 10;
+        int PICKER_RANGE = 50;
+        final String[] displayedValues  = new String[NUMBER_OF_VALUES];
 
         switch(mCurrentAct)
         {
             case 0://eat
-
-                int NUMBER_OF_VALUES = 10;
-                int PICKER_RANGE = 50;
-                String[] displayedValues  = new String[NUMBER_OF_VALUES];
                 for(int i=0; i<NUMBER_OF_VALUES; i++)
                     displayedValues[i] = String.valueOf(PICKER_RANGE * (i+1));
 
-                NumberPicker picker = new ColorNumberPicker(getApplicationContext());
                 picker.setMinValue(0);
                 picker.setMaxValue(NUMBER_OF_VALUES - 1);
                 picker.setDisplayedValues(displayedValues);
@@ -97,6 +105,8 @@ public class MainActivity extends Activity
 
                 break;
             case 1://poo
+
+
                 break;
             case 2://sleep
                 break;
@@ -107,7 +117,40 @@ public class MainActivity extends Activity
 
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-//                Toast.makeText(getCallingActivity(),"button OK pressed", Toast.LENGTH_LONG).show();
+//                Toast.makeText(getApplicationContext(),"button OK pressed", Toast.LENGTH_LONG).show();
+                switch(mCurrentAct)
+                {
+                    case 0:
+                        DatePicker DP = (DatePicker)(MainActivity.this.findViewById(R.id.datePicker));
+                        TimePicker TP = (TimePicker)(MainActivity.this.findViewById(R.id.timePicker));
+
+                        String message = DP.getYear()+"."+String.valueOf(DP.getMonth()+1) +"."+ DP.getDayOfMonth() + " "+
+                                TP.getCurrentHour() +"." +TP.getCurrentMinute() +
+                                ": 宝宝喝了" + displayedValues[picker.getValue()] + "毫升奶\n";
+
+                        Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+                        if(isExternalStorageWritable())
+                        {
+                            File eatFile = getStorageFile("eat.txt");
+                            try {
+                                FileOutputStream fos = new FileOutputStream(eatFile,true);
+                                fos.write(message.getBytes());
+                                fos.close();
+
+                                Toast.makeText(MainActivity.this, "文件写入成功", Toast.LENGTH_SHORT).show();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        break;
+                    default:
+                        break;
+                }
             }
         });
 
@@ -141,5 +184,31 @@ public class MainActivity extends Activity
 //                transaction.replace(R.id.right_fragment, eatFragment);
 //                transaction.commit();
 
+    }
+
+    /* Checks if external storage is available for read and write */
+    public boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return true;
+        }
+        return false;
+    }
+
+    /* Checks if external storage is available to at least read */
+    public boolean isExternalStorageReadable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+            return true;
+        }
+        return false;
+    }
+
+    public File getStorageFile(String fileName) {
+        // Get the directory for the user's public pictures directory.
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
+
+        return file;
     }
 }

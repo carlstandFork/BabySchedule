@@ -8,7 +8,7 @@
 
     <string-array name="dialogMsg">
         <item>宝宝吃了多少毫升奶？</item>
-        <item>宝宝拉了多少屎？</item>
+        <item>宝宝拉了几次屎？</item>
         <item>宝宝睡了几分钟？</item>
     </string-array>
 
