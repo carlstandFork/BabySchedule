@@ -83,73 +83,77 @@ public class MainActivity extends Activity
                 .setMessage(messages[mCurrentAct]);
 // 2. Chain together various setter methods to set the dialog characteristics
         final NumberPicker picker = new ColorNumberPicker(getApplicationContext());
-
-        int NUMBER_OF_VALUES = 10;
-        int PICKER_RANGE = 50;
-        final String[] displayedValues  = new String[NUMBER_OF_VALUES];
-
+        int NUMBER_OF_VALUES = 0;
+        int PICKER_RANGE = 0;
         switch(mCurrentAct)
         {
             case 0://eat
-                for(int i=0; i<NUMBER_OF_VALUES; i++)
-                    displayedValues[i] = String.valueOf(PICKER_RANGE * (i+1));
-
-                picker.setMinValue(0);
-                picker.setMaxValue(NUMBER_OF_VALUES - 1);
-                picker.setDisplayedValues(displayedValues);
-                picker.setWrapSelectorWheel(false);
-                picker.setBackgroundColor(mColorList[mCurrentAct]);
-                picker.setAlpha(0.5f);
-                picker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
-                builder.setView(picker);
-
+                NUMBER_OF_VALUES = 25;
+                PICKER_RANGE = 20;
                 break;
             case 1://poo
-
-
+                NUMBER_OF_VALUES = 10;
+                PICKER_RANGE = 1;
                 break;
             case 2://sleep
+                NUMBER_OF_VALUES = 40;
+                PICKER_RANGE = 15;
                 break;
             default:
                 break;
         }
 
+        final String[] displayedValues = new String[NUMBER_OF_VALUES];
+        for(int i=0; i<NUMBER_OF_VALUES; i++)
+            displayedValues[i] = String.valueOf(PICKER_RANGE * (i+1));
+
+        picker.setMinValue(0);
+        picker.setMaxValue(NUMBER_OF_VALUES - 1);
+        picker.setDisplayedValues(displayedValues);
+        picker.setWrapSelectorWheel(false);
+        picker.setBackgroundColor(mColorList[mCurrentAct]);
+        picker.setAlpha(0.5f);
+        picker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+        builder.setView(picker);
+
 
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-//                Toast.makeText(getApplicationContext(),"button OK pressed", Toast.LENGTH_LONG).show();
+                DatePicker DP = (DatePicker)(MainActivity.this.findViewById(R.id.datePicker));
+                TimePicker TP = (TimePicker)(MainActivity.this.findViewById(R.id.timePicker));
+                String dateAndTime = DP.getYear()+"."+String.valueOf(DP.getMonth()+1) +"."+ DP.getDayOfMonth() + " "+
+                        TP.getCurrentHour() +"." +TP.getCurrentMinute();
+                String message ="", fileName = "";
                 switch(mCurrentAct)
                 {
-                    case 0:
-                        DatePicker DP = (DatePicker)(MainActivity.this.findViewById(R.id.datePicker));
-                        TimePicker TP = (TimePicker)(MainActivity.this.findViewById(R.id.timePicker));
-
-                        String message = DP.getYear()+"."+String.valueOf(DP.getMonth()+1) +"."+ DP.getDayOfMonth() + " "+
-                                TP.getCurrentHour() +"." +TP.getCurrentMinute() +
-                                ": 宝宝喝了" + displayedValues[picker.getValue()] + "毫升奶\n";
-
-                        Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
-                        if(isExternalStorageWritable())
-                        {
-                            File eatFile = getStorageFile("eat.txt");
-                            try {
-                                FileOutputStream fos = new FileOutputStream(eatFile,true);
-                                fos.write(message.getBytes());
-                                fos.close();
-
-                                Toast.makeText(MainActivity.this, "文件写入成功", Toast.LENGTH_SHORT).show();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        break;
-                    case 1:
-                        break;
-                    case 2:
-                        break;
+                    case 0: {
+                        message = dateAndTime + ": 宝宝喝了" + displayedValues[picker.getValue()] + "毫升奶\n";
+                        fileName = "eat.txt";
+                    }   break;
+                    case 1: {
+                        message = dateAndTime + ": 宝宝拉了" + displayedValues[picker.getValue()] + "次屎\n";
+                        fileName = "poo.txt";
+                    }   break;
+                    case 2: {
+                        message = dateAndTime + ": 宝宝睡了" + displayedValues[picker.getValue()] + "分钟\n";
+                        fileName = "sleep.txt";
+                    }   break;
                     default:
                         break;
+                }
+
+                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+                if (isExternalStorageWritable() && !fileName.equals("")) {
+                    File eatFile = getStorageFile(fileName);
+                    try {
+                        FileOutputStream fos = new FileOutputStream(eatFile, true);
+                        fos.write(message.getBytes());
+                        fos.close();
+
+                        Toast.makeText(MainActivity.this, "文件写入成功", Toast.LENGTH_SHORT).show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
