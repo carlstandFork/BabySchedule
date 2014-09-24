@@ -74,14 +74,13 @@ public class MainActivity extends Activity
     public void onButtonNextPressed(View view)
     {
 //        Toast.makeText(this,"button next on act" + mCurrentAct + "pressed", Toast.LENGTH_LONG).show();
-        // 1. Instantiate an AlertDialog.Builder with its constructor
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         String[] actions = getResources().getStringArray(R.array.actions);
         String[] messages = getResources().getStringArray(R.array.dialogMsg);
         builder.setTitle(actions[mCurrentAct])
                 .setMessage(messages[mCurrentAct]);
-// 2. Chain together various setter methods to set the dialog characteristics
+
         final NumberPicker picker = new ColorNumberPicker(getApplicationContext());
         int NUMBER_OF_VALUES = 0;
         int PICKER_RANGE = 0;
@@ -96,8 +95,8 @@ public class MainActivity extends Activity
                 PICKER_RANGE = 1;
                 break;
             case 2://sleep
-                NUMBER_OF_VALUES = 40;
-                PICKER_RANGE = 15;
+                NUMBER_OF_VALUES = 20;
+                PICKER_RANGE = 30;
                 break;
             default:
                 break;
@@ -116,35 +115,33 @@ public class MainActivity extends Activity
         picker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
         builder.setView(picker);
 
-
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 DatePicker DP = (DatePicker)(MainActivity.this.findViewById(R.id.datePicker));
                 TimePicker TP = (TimePicker)(MainActivity.this.findViewById(R.id.timePicker));
                 String dateAndTime = DP.getYear()+"."+String.valueOf(DP.getMonth()+1) +"."+ DP.getDayOfMonth() + " "+
                         TP.getCurrentHour() +"." +TP.getCurrentMinute();
-                String message ="", fileName = "";
+                String message ="";
                 switch(mCurrentAct)
                 {
                     case 0: {
                         message = dateAndTime + ": 宝宝喝了" + displayedValues[picker.getValue()] + "毫升奶\n";
-                        fileName = "eat.txt";
                     }   break;
                     case 1: {
                         message = dateAndTime + ": 宝宝拉了" + displayedValues[picker.getValue()] + "次屎\n";
-                        fileName = "poo.txt";
                     }   break;
                     case 2: {
                         message = dateAndTime + ": 宝宝睡了" + displayedValues[picker.getValue()] + "分钟\n";
-                        fileName = "sleep.txt";
                     }   break;
                     default:
                         break;
                 }
 
                 Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
-                if (isExternalStorageWritable() && !fileName.equals("")) {
-                    File eatFile = getStorageFile(fileName);
+//              save to the file
+                if (isExternalStorageWritable()) {
+                    String[] fileNames = getResources().getStringArray(R.array.fileName);
+                    File eatFile = getStorageFile(fileNames[mCurrentAct]);
                     try {
                         FileOutputStream fos = new FileOutputStream(eatFile, true);
                         fos.write(message.getBytes());
@@ -164,7 +161,6 @@ public class MainActivity extends Activity
             }
         });
 
-// 3. Get the AlertDialog from create()
         AlertDialog dialog = builder.create();
 //        dialog.setInverseBackgroundForced(false);
 //        Window window = dialog.getWindow();
@@ -174,15 +170,14 @@ public class MainActivity extends Activity
         dialog.show();
     }
 
-@Override
+    @Override
     public void onFragmentInteraction(String id, int position)
     {
-//        Toast.makeText(this, id, Toast.LENGTH_LONG).show();
         mCurrentAct = position % mColorList.length;
 
-        View rightview = getFragmentManager().findFragmentById(R.id.right_fragment).getView();
+        View rightView = getFragmentManager().findFragmentById(R.id.right_fragment).getView();
 
-        rightview.setBackgroundColor(mColorList[mCurrentAct]);
+        rightView.setBackgroundColor(mColorList[mCurrentAct]);
 //                EatFragment eatFragment = new EatFragment();
 //                FragmentTransaction transaction= getFragmentManager().beginTransaction();
 //                transaction.replace(R.id.right_fragment, eatFragment);
@@ -210,9 +205,7 @@ public class MainActivity extends Activity
     }
 
     public File getStorageFile(String fileName) {
-        // Get the directory for the user's public pictures directory.
         File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
-
         return file;
     }
 }

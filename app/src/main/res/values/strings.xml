@@ -12,6 +12,12 @@
         <item>宝宝睡了几分钟？</item>
     </string-array>
 
+    <string-array name="fileName">
+        <item>eat.txt</item>
+        <item>poo.txt</item>
+        <item>sleep.txt</item>
+    </string-array>
+
     <string name="app_name">BabySchedule</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
