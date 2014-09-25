@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.DatePicker;
+import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -31,7 +32,7 @@ public class MainActivity extends Activity
         implements ItemFragment.OnFragmentInteractionListener{
 
     private int[] mColorList;
-
+    private int[] mBackgroundPics;
     private int mCurrentAct;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +43,14 @@ public class MainActivity extends Activity
 //        display.getSize(size);
 //        if ( size.x < size.y) {
         mColorList =new int[]{Color.YELLOW, Color.MAGENTA, Color.CYAN};
+        mBackgroundPics = new int[]{R.drawable.eat, R.drawable.poo,R.drawable.sleep};
         setContentView(R.layout.layout_large);
-        View rightview = getFragmentManager().findFragmentById(R.id.right_fragment).getView();
-        rightview.setBackgroundColor(mColorList[mCurrentAct]);
+        View rightView = getFragmentManager().findFragmentById(R.id.right_fragment).getView();
+        if (rightView != null) {
+            rightView.setBackgroundResource(mBackgroundPics[mCurrentAct]);
+            rightView.getBackground().setAlpha(0x20);
+//            rightView.setBackgroundColor(Color.parseColor("#86222222"));
+        }
 //        ItemFragment itemfragment = new ItemFragment();
 //        getFragmentManager().beginTransaction().add(R.id.left_fragment, itemfragment).commit();
 //        rightFragment rightfragment = new rightFragment();
@@ -177,7 +183,12 @@ public class MainActivity extends Activity
 
         View rightView = getFragmentManager().findFragmentById(R.id.right_fragment).getView();
 
-        rightView.setBackgroundColor(mColorList[mCurrentAct]);
+        if (rightView != null) {
+            rightView.setBackgroundResource(mBackgroundPics[mCurrentAct]);
+            rightView.getBackground().setAlpha(0x20);
+        }
+
+//        rightView.setBackgroundColor(mColorList[mCurrentAct]);
 //                EatFragment eatFragment = new EatFragment();
 //                FragmentTransaction transaction= getFragmentManager().beginTransaction();
 //                transaction.replace(R.id.right_fragment, eatFragment);
