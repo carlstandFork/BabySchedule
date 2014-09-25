@@ -25,7 +25,7 @@ public class ItemListAdapter<T> extends ArrayAdapter<T> {
 
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = super.getView(position, convertView, parent);
-        view.setBackgroundColor(colors[position % 3]);
+//        view.setBackgroundColor(colors[position % 3]);
         return view;
     }
 

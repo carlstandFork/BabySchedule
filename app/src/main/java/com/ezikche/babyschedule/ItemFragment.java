@@ -1,6 +1,7 @@
 package com.ezikche.babyschedule;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
@@ -37,7 +38,7 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
-
+    private int[] colors = { Color.YELLOW, Color.MAGENTA,Color.CYAN };
     /**
      * The fragment's ListView/GridView.
      */
@@ -49,6 +50,7 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
      */
     private ItemListAdapter mAdapter;
     private List<String> mStringList;
+    private View mLastSelectedView;
 
     // TODO: Rename and change types of parameters
     public static ItemFragment newInstance(String param1, String param2) {
@@ -88,7 +90,7 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
 
         // Set the adapter
         mListView = (AbsListView) view.findViewById(android.R.id.list);
-        ((AdapterView<ListAdapter>) mListView).setAdapter(mAdapter);
+        mListView.setAdapter(mAdapter);
 
         // Set OnItemClickListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
@@ -119,7 +121,7 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
         if (null != mListener) {
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
-            mListener.onFragmentInteraction(mStringList.get(position), position);
+            mListener.onFragmentInteraction(mStringList.get(position), position, view);
         }
     }
 
@@ -148,7 +150,7 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        public void onFragmentInteraction(String id, int position);
+        public void onFragmentInteraction(String id, int position, View view);
     }
 
 }

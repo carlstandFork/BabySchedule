@@ -2,30 +2,20 @@ package com.ezikche.babyschedule;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.graphics.Color;
-import android.graphics.Point;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
-import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.DatePicker;
-import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 
 
 public class MainActivity extends Activity
@@ -34,6 +24,7 @@ public class MainActivity extends Activity
     private int[] mColorList;
     private int[] mBackgroundPics;
     private int mCurrentAct;
+    private View mLastSelectedItem;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,12 +36,11 @@ public class MainActivity extends Activity
         mColorList =new int[]{Color.YELLOW, Color.MAGENTA, Color.CYAN};
         mBackgroundPics = new int[]{R.drawable.eat, R.drawable.poo,R.drawable.sleep};
         setContentView(R.layout.layout_large);
-        View rightView = getFragmentManager().findFragmentById(R.id.right_fragment).getView();
-        if (rightView != null) {
-            rightView.setBackgroundResource(mBackgroundPics[mCurrentAct]);
-            rightView.getBackground().setAlpha(0x20);
-//            rightView.setBackgroundColor(Color.parseColor("#86222222"));
-        }
+//        View rightView = getFragmentManager().findFragmentById(R.id.right_fragment).getView();
+//        if (rightView != null) {
+//            rightView.setBackgroundResource(mBackgroundPics[mCurrentAct]);
+//            rightView.getBackground().setAlpha(0x20);
+//        }
 //        ItemFragment itemfragment = new ItemFragment();
 //        getFragmentManager().beginTransaction().add(R.id.left_fragment, itemfragment).commit();
 //        rightFragment rightfragment = new rightFragment();
@@ -71,8 +61,26 @@ public class MainActivity extends Activity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        switch(id){
+            case R.id.action_settings:
+                Toast.makeText(this,"设定功能还没做好 ：P", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.action_statistic:
+//                Toast.makeText(this,"统计功能正在开发中 ：）", Toast.LENGTH_SHORT).show();
+                if(isExternalStorageReadable()){
+                    String[] fileNames = getResources().getStringArray(R.array.fileName);
+                    File eatFile = getStorageFile(fileNames[0]);
+                    File pooFile = getStorageFile(fileNames[1]);
+                    File sleepFile = getStorageFile(fileNames[2]);
+
+                }
+                else
+                {
+                    Toast.makeText(this,"文件系统不可读",Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            default:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -134,10 +142,10 @@ public class MainActivity extends Activity
                         message = dateAndTime + ": 宝宝已经喝了" + displayedValues[picker.getValue()] + "毫升奶\n";
                     }   break;
                     case 1: {
-                        message = dateAndTime + ": 宝宝已经拉了" + displayedValues[picker.getValue()] + "次屎\n";
+                        message = dateAndTime + ": 宝宝已经拉了" + displayedValues[picker.getValue()] + "次臭臭\n";
                     }   break;
                     case 2: {
-                        message = dateAndTime + ": 宝宝已经睡了" + displayedValues[picker.getValue()] + "小时\n";
+                        message = dateAndTime + ": 宝宝已经睡了" + displayedValues[picker.getValue()] + "小时觉觉\n";
                     }   break;
                     default:
                         break;
@@ -177,17 +185,20 @@ public class MainActivity extends Activity
     }
 
     @Override
-    public void onFragmentInteraction(String id, int position)
+    public void onFragmentInteraction(String id, int position, View view)
     {
+        if(null!=mLastSelectedItem)
+            mLastSelectedItem.setBackgroundColor(Color.TRANSPARENT);
+
         mCurrentAct = position % mColorList.length;
+        view.setBackgroundColor(mColorList[mCurrentAct]);
+        mLastSelectedItem = view;
 
         View rightView = getFragmentManager().findFragmentById(R.id.right_fragment).getView();
-
         if (rightView != null) {
             rightView.setBackgroundResource(mBackgroundPics[mCurrentAct]);
             rightView.getBackground().setAlpha(0x20);
         }
-
 //        rightView.setBackgroundColor(mColorList[mCurrentAct]);
 //                EatFragment eatFragment = new EatFragment();
 //                FragmentTransaction transaction= getFragmentManager().beginTransaction();
@@ -199,24 +210,17 @@ public class MainActivity extends Activity
     /* Checks if external storage is available for read and write */
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
+        return Environment.MEDIA_MOUNTED.equals(state);
     }
 
     /* Checks if external storage is available to at least read */
     public boolean isExternalStorageReadable() {
         String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state) ||
-                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-            return true;
-        }
-        return false;
+        return Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
     }
 
     public File getStorageFile(String fileName) {
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
-        return file;
+        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
     }
 }
