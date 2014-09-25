@@ -83,7 +83,7 @@ public class MainActivity extends Activity
 
         final NumberPicker picker = new ColorNumberPicker(getApplicationContext());
         int NUMBER_OF_VALUES = 0;
-        int PICKER_RANGE = 0;
+        float PICKER_RANGE = 0;
         switch(mCurrentAct)
         {
             case 0://eat
@@ -96,7 +96,7 @@ public class MainActivity extends Activity
                 break;
             case 2://sleep
                 NUMBER_OF_VALUES = 20;
-                PICKER_RANGE = 30;
+                PICKER_RANGE = 0.5f;
                 break;
             default:
                 break;
@@ -125,13 +125,13 @@ public class MainActivity extends Activity
                 switch(mCurrentAct)
                 {
                     case 0: {
-                        message = dateAndTime + ": 宝宝喝了" + displayedValues[picker.getValue()] + "毫升奶\n";
+                        message = dateAndTime + ": 宝宝已经喝了" + displayedValues[picker.getValue()] + "毫升奶\n";
                     }   break;
                     case 1: {
-                        message = dateAndTime + ": 宝宝拉了" + displayedValues[picker.getValue()] + "次屎\n";
+                        message = dateAndTime + ": 宝宝已经拉了" + displayedValues[picker.getValue()] + "次屎\n";
                     }   break;
                     case 2: {
-                        message = dateAndTime + ": 宝宝睡了" + displayedValues[picker.getValue()] + "分钟\n";
+                        message = dateAndTime + ": 宝宝已经睡了" + displayedValues[picker.getValue()] + "小时\n";
                     }   break;
                     default:
                         break;
