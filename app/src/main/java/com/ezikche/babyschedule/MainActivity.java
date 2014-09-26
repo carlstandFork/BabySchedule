@@ -2,7 +2,9 @@ package com.ezikche.babyschedule;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
@@ -29,10 +31,6 @@ public class MainActivity extends Activity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mCurrentAct = 0;
-//        Display display = getWindowManager().getDefaultDisplay();
-//        Point size = new Point();
-//        display.getSize(size);
-//        if ( size.x < size.y) {
         mColorList =new int[]{Color.YELLOW, Color.MAGENTA, Color.CYAN};
         mBackgroundPics = new int[]{R.drawable.eat, R.drawable.poo,R.drawable.sleep};
         setContentView(R.layout.layout_large);
@@ -41,10 +39,6 @@ public class MainActivity extends Activity
         itemFragment.setSelectedItem(mCurrentAct);
         setRightBackgroundByAction(mCurrentAct);
 
-//        ItemFragment itemfragment = new ItemFragment();
-//        getFragmentManager().beginTransaction().add(R.id.left_fragment, itemfragment).commit();
-//        rightFragment rightfragment = new rightFragment();
-//        getFragmentManager().beginTransaction().add(R.id.right_fragment, rightfragment).commit();
     }
 
 
@@ -78,7 +72,10 @@ public class MainActivity extends Activity
                 }
                 return true;
             case R.id.action_detail:
-
+                Toast.makeText(this,"明细即将打开:)", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent();
+                intent.setClass(MainActivity.this, DetailActivity.class);
+                startActivity(intent);
                 return true;
             default:
                 break;
@@ -192,11 +189,6 @@ public class MainActivity extends Activity
         view.setBackgroundColor(mColorList[mCurrentAct]);
 
         setRightBackgroundByAction(mCurrentAct);
-//        rightView.setBackgroundColor(mColorList[mCurrentAct]);
-//                EatFragment eatFragment = new EatFragment();
-//                FragmentTransaction transaction= getFragmentManager().beginTransaction();
-//                transaction.replace(R.id.right_fragment, eatFragment);
-//                transaction.commit();
 
     }
 

@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string-array name="actions">
         <item>喝奶</item>
         <item>臭臭</item>
         <item>觉觉</item>
     </string-array>
-
     <string-array name="dialogMsg">
         <item>宝宝已经喝了多少毫升奶？</item>
         <item>宝宝已经拉了几次臭臭？</item>
         <item>宝宝已经睡了几小时觉觉？</item>
     </string-array>
-
     <string-array name="fileName">
         <item>eat.txt</item>
         <item>poo.txt</item>
@@ -28,4 +27,6 @@
     <string name="next">下一步</string>
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
+    <string name="title_activity_detail">明细</string>
+
 </resources>
