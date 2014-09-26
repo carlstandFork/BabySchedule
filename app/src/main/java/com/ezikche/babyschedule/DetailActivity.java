@@ -26,7 +26,7 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
         mColorList =new int[]{Color.YELLOW, Color.MAGENTA, Color.CYAN};
         mBackgroundPics = new int[]{R.drawable.eat, R.drawable.poo,R.drawable.sleep};
         setContentView(R.layout.layout_large_detail);
-
+        setTextViewByAct(0);
     }
 
 
@@ -53,23 +53,7 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
     public void onFragmentInteraction(String id, int position, View view)
     {
         int pos = position % mColorList.length;
-        if (isExternalStorageReadable()){
-            String[] fileNames = getResources().getStringArray(R.array.fileName);
-            File inFile = getStorageFile(fileNames[position]);
-            try {
-                BufferedReader buf = new BufferedReader(new FileReader(inFile));
-                TextView rightView = (TextView)findViewById(R.id.textView);
-                String line = buf.readLine();
-//                while((tmp = buf.readLine())!=null);
-//                {
-//                    line = tmp;
-//                }
-                rightView.setText(line);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }
+        setTextViewByAct(pos);
         setRightBackgroundByAction(position);
     }
 
@@ -81,6 +65,35 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
         }
     }
 
+    private void setTextViewByAct(int position) {
+        if (isExternalStorageReadable()) {
+            String[] fileNames = getResources().getStringArray(R.array.fileName);
+            File inFile = getStorageFile(fileNames[position]);
+            try {
+                BufferedReader buf = new BufferedReader(new FileReader(inFile));
+                int bufferSize = 10;
+                CircularArrayList<String> rb = new CircularArrayList<String>(bufferSize);
+                String tmp;
+                while ((tmp = buf.readLine()) != null) {
+                    try{
+                        rb.add(tmp + "\n");
+                    }
+                    catch(IllegalStateException e){
+                        rb.remove(0);
+                        rb.add(tmp + "\n");
+                    }
+                }
+
+                TextView rightView = (TextView) findViewById(R.id.textView);
+                rightView.setText("");
+                for (int i = rb.size()-1; i >= 0; --i)
+                    rightView.append(rb.get(i));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
     /* Checks if external storage is available for read and write */
     private boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
