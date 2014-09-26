@@ -10,4 +10,9 @@
         android:title="@string/statistic"
         android:orderInCategory="101"
         android:showAsAction="ifRoom|withText"/>
+    <item
+        android:id="@+id/action_detail"
+        android:title="@string/detail"
+        android:orderInCategory="102"
+        android:showAsAction="ifRoom|withText"/>
 </menu>

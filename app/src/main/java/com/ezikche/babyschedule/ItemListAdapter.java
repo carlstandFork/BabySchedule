@@ -18,14 +18,27 @@ import java.util.Map;
  */
 public class ItemListAdapter<T> extends ArrayAdapter<T> {
     private int[] colors = { Color.YELLOW, Color.MAGENTA,Color.CYAN };
+    private int mPos = 0;
 
     public ItemListAdapter(Context context, int resource, List<T> objects) {
         super(context, resource, objects);
     }
 
+    public void setSelectedPos(int position){
+        mPos = position;
+    }
+
+    public int getSelectedPos(){
+        return mPos;
+    }
+
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = super.getView(position, convertView, parent);
-//        view.setBackgroundColor(colors[position % 3]);
+        if(mPos == position){
+            view.setBackgroundColor(colors[position % 3]);
+        }
+        else
+            view.setBackgroundColor(Color.TRANSPARENT);
         return view;
     }
 

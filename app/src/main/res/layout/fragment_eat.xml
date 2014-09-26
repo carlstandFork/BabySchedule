@@ -32,7 +32,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Next"
+        android:text="@string/next"
         android:id="@+id/button"
         android:layout_below="@+id/timePicker"
         android:layout_alignParentLeft="true"

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 
@@ -30,11 +31,11 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_INITPOS = "intPos";
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
+    private int mInitPos;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
@@ -50,13 +51,12 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
      */
     private ItemListAdapter mAdapter;
     private List<String> mStringList;
-    private View mLastSelectedView;
 
     // TODO: Rename and change types of parameters
-    public static ItemFragment newInstance(String param1, String param2) {
+    public static ItemFragment newInstance(int initPos, String param2) {
         ItemFragment fragment = new ItemFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
+        args.putInt(ARG_INITPOS, initPos);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
@@ -74,7 +74,7 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+            mInitPos = getArguments().getInt(ARG_INITPOS);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
@@ -118,6 +118,7 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        setSelectedItem(position);
         if (null != mListener) {
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
@@ -136,6 +137,11 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
         if (emptyText instanceof TextView) {
             ((TextView) emptyView).setText(emptyText);
         }
+    }
+
+    public void setSelectedItem(int position){
+        mAdapter.setSelectedPos(position);
+        mAdapter.notifyDataSetChanged();
     }
 
     /**

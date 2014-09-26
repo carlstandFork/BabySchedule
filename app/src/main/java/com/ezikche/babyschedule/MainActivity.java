@@ -24,7 +24,7 @@ public class MainActivity extends Activity
     private int[] mColorList;
     private int[] mBackgroundPics;
     private int mCurrentAct;
-    private View mLastSelectedItem;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,11 +36,11 @@ public class MainActivity extends Activity
         mColorList =new int[]{Color.YELLOW, Color.MAGENTA, Color.CYAN};
         mBackgroundPics = new int[]{R.drawable.eat, R.drawable.poo,R.drawable.sleep};
         setContentView(R.layout.layout_large);
-//        View rightView = getFragmentManager().findFragmentById(R.id.right_fragment).getView();
-//        if (rightView != null) {
-//            rightView.setBackgroundResource(mBackgroundPics[mCurrentAct]);
-//            rightView.getBackground().setAlpha(0x20);
-//        }
+
+        ItemFragment itemFragment = (ItemFragment)getFragmentManager().findFragmentById(R.id.left_fragment);
+        itemFragment.setSelectedItem(mCurrentAct);
+        setRightBackgroundByAction(mCurrentAct);
+
 //        ItemFragment itemfragment = new ItemFragment();
 //        getFragmentManager().beginTransaction().add(R.id.left_fragment, itemfragment).commit();
 //        rightFragment rightfragment = new rightFragment();
@@ -63,21 +63,22 @@ public class MainActivity extends Activity
         int id = item.getItemId();
         switch(id){
             case R.id.action_settings:
-                Toast.makeText(this,"设定功能还没做好 ：P", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"设定功能还没做好 :P", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.action_statistic:
-//                Toast.makeText(this,"统计功能正在开发中 ：）", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"统计功能仍在拼命(>_<)开发中", Toast.LENGTH_SHORT).show();
                 if(isExternalStorageReadable()){
                     String[] fileNames = getResources().getStringArray(R.array.fileName);
                     File eatFile = getStorageFile(fileNames[0]);
-                    File pooFile = getStorageFile(fileNames[1]);
-                    File sleepFile = getStorageFile(fileNames[2]);
 
                 }
                 else
                 {
                     Toast.makeText(this,"文件系统不可读",Toast.LENGTH_SHORT).show();
                 }
+                return true;
+            case R.id.action_detail:
+
                 return true;
             default:
                 break;
@@ -155,9 +156,9 @@ public class MainActivity extends Activity
 //              save to the file
                 if (isExternalStorageWritable()) {
                     String[] fileNames = getResources().getStringArray(R.array.fileName);
-                    File eatFile = getStorageFile(fileNames[mCurrentAct]);
+                    File outFile = getStorageFile(fileNames[mCurrentAct]);
                     try {
-                        FileOutputStream fos = new FileOutputStream(eatFile, true);
+                        FileOutputStream fos = new FileOutputStream(outFile, true);
                         fos.write(message.getBytes());
                         fos.close();
 
@@ -187,18 +188,10 @@ public class MainActivity extends Activity
     @Override
     public void onFragmentInteraction(String id, int position, View view)
     {
-        if(null!=mLastSelectedItem)
-            mLastSelectedItem.setBackgroundColor(Color.TRANSPARENT);
-
         mCurrentAct = position % mColorList.length;
         view.setBackgroundColor(mColorList[mCurrentAct]);
-        mLastSelectedItem = view;
 
-        View rightView = getFragmentManager().findFragmentById(R.id.right_fragment).getView();
-        if (rightView != null) {
-            rightView.setBackgroundResource(mBackgroundPics[mCurrentAct]);
-            rightView.getBackground().setAlpha(0x20);
-        }
+        setRightBackgroundByAction(mCurrentAct);
 //        rightView.setBackgroundColor(mColorList[mCurrentAct]);
 //                EatFragment eatFragment = new EatFragment();
 //                FragmentTransaction transaction= getFragmentManager().beginTransaction();
@@ -208,19 +201,27 @@ public class MainActivity extends Activity
     }
 
     /* Checks if external storage is available for read and write */
-    public boolean isExternalStorageWritable() {
+    private boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         return Environment.MEDIA_MOUNTED.equals(state);
     }
 
     /* Checks if external storage is available to at least read */
-    public boolean isExternalStorageReadable() {
+    private boolean isExternalStorageReadable() {
         String state = Environment.getExternalStorageState();
         return Environment.MEDIA_MOUNTED.equals(state) ||
                 Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
     }
 
-    public File getStorageFile(String fileName) {
+    private File getStorageFile(String fileName) {
         return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
+    }
+
+    private void setRightBackgroundByAction(int action){
+        View rightView = getFragmentManager().findFragmentById(R.id.right_fragment).getView();
+        if (rightView != null) {
+            rightView.setBackgroundResource(mBackgroundPics[action]);
+            rightView.getBackground().setAlpha(0x20);
+        }
     }
 }
