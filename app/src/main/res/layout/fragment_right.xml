@@ -5,11 +5,17 @@
     tools:context="com.ezikche.babyschedule.rightFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textAppearance="?android:attr/textAppearanceLarge"-->
+        <!--android:id="@+id/textView"-->
+        <!--android:layout_gravity="left|top" />-->
+
+    <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:id="@+id/textView"
+        android:id="@+id/listView"
         android:layout_gravity="left|top" />
 
 </FrameLayout>

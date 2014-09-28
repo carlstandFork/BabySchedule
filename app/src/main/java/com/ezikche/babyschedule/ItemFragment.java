@@ -1,18 +1,15 @@
 package com.ezikche.babyschedule;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
-
 
 import java.util.ArrayList;
 import java.util.Arrays;

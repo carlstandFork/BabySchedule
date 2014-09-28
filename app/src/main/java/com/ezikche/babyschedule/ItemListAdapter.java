@@ -5,13 +5,8 @@ import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
-import android.widget.SimpleAdapter;
-
-import com.ezikche.babyschedule.R;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by ezikche on 9/22/2014.
