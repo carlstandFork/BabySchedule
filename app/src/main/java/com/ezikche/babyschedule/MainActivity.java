@@ -61,8 +61,6 @@ public class MainActivity extends Activity
             case R.id.action_statistic:
                 Toast.makeText(this,"统计功能仍在拼命(>_<)开发中", Toast.LENGTH_SHORT).show();
                 if(isExternalStorageReadable()){
-                    String[] fileNames = getResources().getStringArray(R.array.fileName);
-                    File eatFile = getStorageFile(fileNames[0]);
 
                 }
                 else
@@ -130,19 +128,21 @@ public class MainActivity extends Activity
             public void onClick(DialogInterface dialog, int id) {
                 DatePicker DP = (DatePicker)(MainActivity.this.findViewById(R.id.datePicker));
                 TimePicker TP = (TimePicker)(MainActivity.this.findViewById(R.id.timePicker));
-                String dateAndTime = DP.getYear()+"."+String.valueOf(DP.getMonth()+1) +"."+ DP.getDayOfMonth() + " "+
-                        TP.getCurrentHour() +"." +TP.getCurrentMinute();
+                String date = DP.getYear()+"."+String.format("%02d",DP.getMonth()+1) +"."+ String.format("%02d",DP.getDayOfMonth());
+                String time = String.format("%02d",TP.getCurrentHour()) +"." +String.format("%02d",TP.getCurrentMinute());
+                String dateAndTime = date + " "+time;
+
                 String message ="";
                 switch(mCurrentAct)
                 {
                     case 0: {
-                        message = dateAndTime + ": 宝宝已经喝了" + displayedValues[picker.getValue()] + "毫升奶\n";
+                        message = time + ": 宝宝已经喝了" + displayedValues[picker.getValue()] + "毫升奶\n";
                     }   break;
                     case 1: {
-                        message = dateAndTime + ": 宝宝已经拉了" + displayedValues[picker.getValue()] + "次臭臭\n";
+                        message = time + ": 宝宝已经拉了" + displayedValues[picker.getValue()] + "次臭臭\n";
                     }   break;
                     case 2: {
-                        message = dateAndTime + ": 宝宝已经睡了" + displayedValues[picker.getValue()] + "小时觉觉\n";
+                        message = time + ": 宝宝已经睡了" + displayedValues[picker.getValue()] + "小时觉觉\n";
                     }   break;
                     default:
                         break;
@@ -152,7 +152,7 @@ public class MainActivity extends Activity
 //              save to the file
                 if (isExternalStorageWritable()) {
                     String[] fileNames = getResources().getStringArray(R.array.fileName);
-                    File outFile = getStorageFile(fileNames[mCurrentAct]);
+                    File outFile = getStorageFile(fileNames[mCurrentAct], date);
                     try {
                         FileOutputStream fos = new FileOutputStream(outFile, true);
                         fos.write(message.getBytes());
@@ -204,8 +204,17 @@ public class MainActivity extends Activity
                 Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
     }
 
-    private File getStorageFile(String fileName) {
-        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
+    private File getStorageFile(String dir, String fileName) {
+        File f = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), dir);
+        if(!f.exists()) {
+            if (f.mkdirs()) {
+                return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + File.separator + dir, fileName);
+            }
+        }
+        else
+            return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+File.separator+dir, fileName);
+
+        return null;
     }
 
     private void setRightBackgroundByAction(int action){

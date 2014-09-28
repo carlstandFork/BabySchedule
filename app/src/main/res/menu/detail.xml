@@ -6,8 +6,14 @@
         android:orderInCategory="100"
         android:showAsAction="never" />
     <item
-        android:id="@+id/action_statistic"
-        android:title="@string/statistic"
+        android:id="@+id/action_next"
+        android:title="@string/nextday"
         android:orderInCategory="101"
         android:showAsAction="ifRoom|withText"/>
+    <item
+        android:id="@+id/action_prev"
+        android:title="@string/prevday"
+        android:orderInCategory="101"
+        android:showAsAction="ifRoom|withText"/>
+
 </menu>

@@ -12,9 +12,9 @@
         <item>宝宝已经睡了几小时觉觉？</item>
     </string-array>
     <string-array name="fileName">
-        <item>eat.txt</item>
-        <item>poo.txt</item>
-        <item>sleep.txt</item>
+        <item>eat</item>
+        <item>poo</item>
+        <item>sleep</item>
     </string-array>
 
     <string name="app_name">宝宝日志</string>
@@ -25,6 +25,8 @@
     <string name="hello_left_fragment">Hello left fragment</string>
     <string name="hello_right_fragment">Hello right fragment</string>
     <string name="next">下一步</string>
+    <string name="nextday">后一天</string>
+    <string name="prevday">前一天</string>
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
     <string name="title_activity_detail">明细</string>

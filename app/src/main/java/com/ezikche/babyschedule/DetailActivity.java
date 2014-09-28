@@ -18,21 +18,26 @@ import android.widget.TextView;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 
 public class DetailActivity extends Activity implements ItemFragment.OnFragmentInteractionListener {
-    private int[] mBackgroundPics;
-    private int[] mColorList;
+    private int[] mBackgroundPics = new int[]{R.drawable.eat, R.drawable.poo,R.drawable.sleep};
+    private int[] mColorList = new int[]{Color.YELLOW, Color.MAGENTA, Color.CYAN};
+    private int mCurrentAct = 0;
+    private File[] mSortedFiles = null;
+    private int mCurrentFileIndex = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mColorList =new int[]{Color.YELLOW, Color.MAGENTA, Color.CYAN};
-        mBackgroundPics = new int[]{R.drawable.eat, R.drawable.poo,R.drawable.sleep};
         setContentView(R.layout.layout_large_detail);
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
-        setTextViewByAct(0);
-
+        setTextViewByAct(mCurrentAct);
+        setRightBackgroundByAction(mCurrentAct);
     }
 
 
@@ -62,6 +67,21 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
                     upIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     NavUtils.navigateUpTo(this, upIntent);
                 }
+                break;
+            case R.id.action_next:
+                ++mCurrentFileIndex;
+                if(mCurrentFileIndex>mSortedFiles.length-1)
+                    mCurrentFileIndex = 0;
+                setTextViewByAct(mCurrentAct);
+                setRightBackgroundByAction(mCurrentAct);
+                break;
+            case R.id.action_prev:
+                --mCurrentFileIndex;
+                if(mCurrentFileIndex<0)
+                    mCurrentFileIndex = mSortedFiles.length -1;
+                setTextViewByAct(mCurrentAct);
+                setRightBackgroundByAction(mCurrentAct);
+                break;
             default:
                 break;
         }
@@ -72,8 +92,12 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
     public void onFragmentInteraction(String id, int position, View view)
     {
         int pos = position % mColorList.length;
-        setTextViewByAct(pos);
-        setRightBackgroundByAction(position);
+        if(mCurrentAct != pos) {
+            mCurrentFileIndex = 0;
+            mCurrentAct = pos;
+        }
+        setTextViewByAct(mCurrentAct);
+        setRightBackgroundByAction(mCurrentAct);
     }
 
     private void setRightBackgroundByAction(int action){
@@ -87,7 +111,8 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
     private void setTextViewByAct(int position) {
         if (isExternalStorageReadable()) {
             String[] fileNames = getResources().getStringArray(R.array.fileName);
-            File inFile = getStorageFile(fileNames[position]);
+            File inFile = getLatestStorageFile(fileNames[position]);
+            getActionBar().setTitle(inFile.getName());
             try {
                 BufferedReader buf = new BufferedReader(new FileReader(inFile));
                 int bufferSize = 10;
@@ -124,7 +149,6 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
 
                 ListView rightView = (ListView) findViewById(R.id.listView);
                 rightView.setAdapter(adapter);
-//                adapter.notifyDataSetChanged();
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -144,7 +168,26 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
                 Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
     }
 
-    private File getStorageFile(String fileName) {
-        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
+    private File getLatestStorageFile(String dir) {
+        File f = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+File.separator+dir);
+        if(f.exists()) {
+            mSortedFiles = f.listFiles();
+            if(null != mSortedFiles)
+            {
+                List<File> files = Arrays.asList(mSortedFiles);
+                Collections.sort(files, new Comparator<File>() {
+                    @Override
+                    public int compare(File o1, File o2) {
+                        if (o1.isDirectory() && o2.isFile())
+                            return 11;
+                        if (o1.isFile() && o2.isDirectory())
+                            return -1;
+                        return o2.getName().compareTo(o1.getName());
+                    }
+                });
+                return mSortedFiles[mCurrentFileIndex];
+            }
+        }
+        return null;
     }
 }
