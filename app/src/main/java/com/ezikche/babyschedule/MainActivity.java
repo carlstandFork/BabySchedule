@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,16 +23,14 @@ import java.io.FileOutputStream;
 public class MainActivity extends Activity
         implements ItemFragment.OnFragmentInteractionListener{
 
-    private int[] mColorList;
-    private int[] mBackgroundPics;
-    private int mCurrentAct;
+    private int[] mColorList =new int[]{Color.YELLOW, Color.MAGENTA, Color.CYAN};
+    private int[] mBackgroundPics  = new int[]{R.drawable.eat, R.drawable.poo,R.drawable.sleep};
+    private int mCurrentAct = 0;
+    private long exitTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mCurrentAct = 0;
-        mColorList =new int[]{Color.YELLOW, Color.MAGENTA, Color.CYAN};
-        mBackgroundPics = new int[]{R.drawable.eat, R.drawable.poo,R.drawable.sleep};
         setContentView(R.layout.layout_large);
 
         ItemFragment itemFragment = (ItemFragment)getFragmentManager().findFragmentById(R.id.left_fragment);
@@ -129,7 +128,7 @@ public class MainActivity extends Activity
                 DatePicker DP = (DatePicker)(MainActivity.this.findViewById(R.id.datePicker));
                 TimePicker TP = (TimePicker)(MainActivity.this.findViewById(R.id.timePicker));
                 String date = DP.getYear()+"."+String.format("%02d",DP.getMonth()+1) +"."+ String.format("%02d",DP.getDayOfMonth());
-                String time = String.format("%02d",TP.getCurrentHour()) +"." +String.format("%02d",TP.getCurrentMinute());
+                String time = String.format("%02d",TP.getCurrentHour()) +"." +String.format("%02d", TP.getCurrentMinute());
                 String dateAndTime = date + " "+time;
 
                 String message ="";
@@ -179,6 +178,23 @@ public class MainActivity extends Activity
 //        lp.alpha = 0.8f;
 //        window.setAttributes(lp);
         dialog.show();
+    }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN){
+
+            if((System.currentTimeMillis()-exitTime) > 2000){
+                Toast.makeText(getApplicationContext(), R.string.press_again_exit, Toast.LENGTH_SHORT).show();
+                exitTime = System.currentTimeMillis();
+            }
+            else{
+                finish();
+                System.exit(0);
+            }
+
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override

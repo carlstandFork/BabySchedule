@@ -22,6 +22,7 @@
     <string name="action_settings">设定</string>
     <string name="statistic">统计</string>
     <string name="detail">明细</string>
+    <string name="press_again_exit">再按一次退出程序</string>
     <string name="hello_left_fragment">Hello left fragment</string>
     <string name="hello_right_fragment">Hello right fragment</string>
     <string name="next">下一步</string>
