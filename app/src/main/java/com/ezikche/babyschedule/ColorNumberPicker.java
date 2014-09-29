@@ -41,7 +41,6 @@ public class ColorNumberPicker extends NumberPicker {
     {
         if (view instanceof EditText)
         {
-//            ((EditText) view).setTextSize(12);
             ((EditText) view).setTextColor(Color.BLACK);
         }
     }

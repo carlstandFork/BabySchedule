@@ -3,11 +3,13 @@ package com.ezikche.babyschedule;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.TaskStackBuilder;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.NavUtils;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +25,7 @@ import android.widget.Toast;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -121,23 +124,34 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
             try {
                 BufferedReader buf = new BufferedReader(new FileReader(inFile));
                 int bufferSize = 10;
-                final CircularArrayList<String> titles = new CircularArrayList<String>(bufferSize);
-                final CircularArrayList<String> bodys = new CircularArrayList<String>(bufferSize);
+//                final CircularArrayList<String> titles = new CircularArrayList<String>(bufferSize);
+//                final CircularArrayList<String> bodys = new CircularArrayList<String>(bufferSize);
 
+
+//                String tmp;
+//                while ((tmp = buf.readLine()) != null) {
+//                    int pos = tmp.indexOf(":");
+//                    try{
+//                        titles.add(tmp.substring(0,pos) + "\n");
+//                        bodys.add(tmp.substring(pos+1) + "\n");
+//                    }
+//                    catch(IllegalStateException e){
+//                        titles.remove(0);
+//                        bodys.remove(0);
+//                        titles.add(tmp.substring(0,pos) + "\n");
+//                        bodys.add(tmp.substring(pos+1) + "\n");
+//                    }
+//                }
+
+                final ArrayList<String> titles = new ArrayList<String>();
+                final ArrayList<String> bodys = new ArrayList<String>();
                 String tmp;
                 while ((tmp = buf.readLine()) != null) {
                     int pos = tmp.indexOf(":");
-                    try{
-                        titles.add(tmp.substring(0,pos) + "\n");
-                        bodys.add(tmp.substring(pos+1) + "\n");
-                    }
-                    catch(IllegalStateException e){
-                        titles.remove(0);
-                        bodys.remove(0);
-                        titles.add(tmp.substring(0,pos) + "\n");
-                        bodys.add(tmp.substring(pos+1) + "\n");
-                    }
+                    titles.add(tmp.substring(0, pos) + "\n");
+                    bodys.add(tmp.substring(pos + 1) + "\n");
                 }
+
 
                 ArrayAdapter adapter = new ArrayAdapter(this, R.layout.simple_list_item_small_title, android.R.id.text1, titles) {
                     @Override
@@ -158,22 +172,15 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id){
                         String inTime = ((TextView) view.findViewById(android.R.id.text1)).getText().toString();
                         String inContent = ((TextView) view.findViewById(android.R.id.text2)).getText().toString();
-                        int separatorPos = inTime.indexOf(".");
-                        int hour = Integer.parseInt(inTime.substring(0, separatorPos));
+                        int spacePos = inTime.indexOf(" ");
+                        int separatorPos = inTime.lastIndexOf(".");
+                        int hour = 0;
+                        if (-1 != spacePos)
+                             hour = Integer.parseInt(inTime.substring(spacePos+1, separatorPos));
+                        else
+                            hour = Integer.parseInt(inTime.substring(0, separatorPos));
+
                         int min = Integer.parseInt(inTime.substring(separatorPos + 1, separatorPos + 3));
-
-                        Toast.makeText(DetailActivity.this, String.valueOf(hour) + ":" + String.valueOf(min), Toast.LENGTH_SHORT).show();
-
-                       //start Dialog to modify clicked line
-                        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(DetailActivity.this);
-                        dialogBuilder.setTitle("test")
-                                .setMessage("test");
-
-                        TimePicker tPicker = new TimePicker(DetailActivity.this);
-                        ColorNumberPicker nPicker = new ColorNumberPicker(DetailActivity.this);
-                        tPicker.setCurrentHour(hour);
-                        tPicker.setCurrentMinute(min);
-
                         int NUMBER_OF_VALUES = 0;
                         float PICKER_RANGE = 0;
                         switch(mCurrentAct)
@@ -211,20 +218,9 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
                             displayedValues[i] = String.valueOf(tmp);
                         }
 
-                        nPicker.setMinValue(0);
-                        nPicker.setMaxValue(NUMBER_OF_VALUES - 1);
-                        nPicker.setDisplayedValues(displayedValues);
-                        nPicker.setValue(valuePos);
-                        nPicker.setWrapSelectorWheel(false);
-                        nPicker.setBackgroundColor(mColorList[mCurrentAct]);
-                        nPicker.setAlpha(0.5f);
-                        nPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+                        Toast.makeText(DetailActivity.this, String.valueOf(hour) + ":" + String.valueOf(min), Toast.LENGTH_SHORT).show();
 
-                        dialogBuilder.setView(tPicker);
-                        dialogBuilder.setView(nPicker);
-
-                        AlertDialog dialog = dialogBuilder.create();
-                        dialog.show();
+                        getDialog(hour,min,displayedValues, valuePos, position).show();
                     }
                 });
                 rightView.setAdapter(adapter);
@@ -233,6 +229,55 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
                 e.printStackTrace();
             }
         }
+    }
+
+    private AlertDialog getDialog(int hour, int min, String[] displayedValues, int valuePos, int itemPos){
+        //start Dialog to modify clicked line
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(DetailActivity.this);
+        dialogBuilder.setTitle("test").setMessage("test");
+
+        LayoutInflater inflater = DetailActivity.this.getLayoutInflater();
+        View layout = inflater.inflate(R.layout.dialog_change, null);
+
+
+        final TimePicker tPicker =  (TimePicker)layout.findViewById(R.id.timePicker);
+//        ColorNumberPicker nPicker = (ColorNumberPicker)layout.findViewById(R.id.colorNumberPicker);
+        NumberPicker nPicker = (NumberPicker)layout.findViewById(R.id.numberPicker);
+        tPicker.setCurrentHour(hour);
+        tPicker.setCurrentMinute(min);
+        tPicker.setBackgroundColor(mColorList[mCurrentAct]);
+        tPicker.setAlpha(0.5f);
+
+        nPicker.setMinValue(0);
+        nPicker.setMaxValue(displayedValues.length - 1);
+        nPicker.setDisplayedValues(displayedValues);
+        nPicker.setValue(valuePos);
+        nPicker.setWrapSelectorWheel(false);
+        nPicker.setBackgroundColor(mColorList[mCurrentAct]);
+        nPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+        nPicker.setAlpha(0.5f);
+
+        dialogBuilder.setView(layout);
+
+        dialogBuilder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+//TODO            change data on list view and save to file
+
+            }
+        });
+        dialogBuilder.setNeutralButton(R.string.delete, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+
+            }
+        });
+        dialogBuilder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+
+            }
+        });
+
+        AlertDialog dialog = dialogBuilder.create();
+        return dialog;
     }
     /* Checks if external storage is available for read and write */
     private boolean isExternalStorageWritable() {
