@@ -1,6 +1,7 @@
 package com.ezikche.babyschedule;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.graphics.Color;
@@ -11,9 +12,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.NumberPicker;
 import android.widget.TextView;
+import android.widget.TimePicker;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -148,6 +153,80 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
                 };
 
                 ListView rightView = (ListView) findViewById(R.id.listView);
+                rightView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id){
+                        String inTime = ((TextView) view.findViewById(android.R.id.text1)).getText().toString();
+                        String inContent = ((TextView) view.findViewById(android.R.id.text2)).getText().toString();
+                        int separatorPos = inTime.indexOf(".");
+                        int hour = Integer.parseInt(inTime.substring(0, separatorPos));
+                        int min = Integer.parseInt(inTime.substring(separatorPos + 1, separatorPos + 3));
+
+                        Toast.makeText(DetailActivity.this, String.valueOf(hour) + ":" + String.valueOf(min), Toast.LENGTH_SHORT).show();
+
+                       //start Dialog to modify clicked line
+                        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(DetailActivity.this);
+                        dialogBuilder.setTitle("test")
+                                .setMessage("test");
+
+                        TimePicker tPicker = new TimePicker(DetailActivity.this);
+                        ColorNumberPicker nPicker = new ColorNumberPicker(DetailActivity.this);
+                        tPicker.setCurrentHour(hour);
+                        tPicker.setCurrentMinute(min);
+
+                        int NUMBER_OF_VALUES = 0;
+                        float PICKER_RANGE = 0;
+                        switch(mCurrentAct)
+                        {
+                            case 0://eat
+                                NUMBER_OF_VALUES = 25;
+                                PICKER_RANGE = 20;
+                                break;
+                            case 1://poo
+                                NUMBER_OF_VALUES = 10;
+                                PICKER_RANGE = 1;
+                                break;
+                            case 2://sleep
+                                NUMBER_OF_VALUES = 20;
+                                PICKER_RANGE = 0.5f;
+                                break;
+                            default:
+                                break;
+                        }
+
+                        int startPos = getFirstDig(inContent);
+                        int endPos = getlastDig(inContent);
+                        float fValue = 0f;
+
+                        if(-1 != startPos && -1 != endPos) {
+                            fValue = Float.parseFloat(inContent.substring(startPos, endPos));
+                        }
+
+                        int valuePos = 0;
+                        String[] displayedValues = new String[NUMBER_OF_VALUES];
+                        for(int i=0; i<NUMBER_OF_VALUES; i++) {
+                            float tmp = PICKER_RANGE * (i + 1);
+                            if ( fValue == tmp)
+                                valuePos = i;
+                            displayedValues[i] = String.valueOf(tmp);
+                        }
+
+                        nPicker.setMinValue(0);
+                        nPicker.setMaxValue(NUMBER_OF_VALUES - 1);
+                        nPicker.setDisplayedValues(displayedValues);
+                        nPicker.setValue(valuePos);
+                        nPicker.setWrapSelectorWheel(false);
+                        nPicker.setBackgroundColor(mColorList[mCurrentAct]);
+                        nPicker.setAlpha(0.5f);
+                        nPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
+
+                        dialogBuilder.setView(tPicker);
+                        dialogBuilder.setView(nPicker);
+
+                        AlertDialog dialog = dialogBuilder.create();
+                        dialog.show();
+                    }
+                });
                 rightView.setAdapter(adapter);
 
             } catch (Exception e) {
@@ -168,6 +247,25 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
                 Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
     }
 
+    private int getFirstDig(String string){
+        int pos = 0;
+        for(;pos<string.length();++pos)
+        {
+            if(string.charAt(pos)>=48 && string.charAt(pos)<=57)
+                return pos;
+        }
+      return -1;
+    };
+
+    private int getlastDig(String string){
+        int pos = string.length()-1;
+        for(;pos>=0;--pos)
+        {
+            if(string.charAt(pos)>=48 && string.charAt(pos)<=57)
+                return pos;
+        }
+        return -1;
+    };
     private File getLatestStorageFile(String dir) {
         File f = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+File.separator+dir);
         if(f.exists()) {
