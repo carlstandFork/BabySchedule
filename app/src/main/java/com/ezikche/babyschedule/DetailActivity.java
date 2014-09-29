@@ -24,7 +24,9 @@ import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,9 +40,11 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
     private int mCurrentAct = 0;
     private File[] mSortedFiles = null;
     private int mCurrentFileIndex = 0;
+    private String[] mFileNames = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mFileNames = getResources().getStringArray(R.array.fileName);
         setContentView(R.layout.layout_large_detail);
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -118,30 +122,11 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
 
     private void setTextViewByAct(int position) {
         if (isExternalStorageReadable()) {
-            String[] fileNames = getResources().getStringArray(R.array.fileName);
-            File inFile = getLatestStorageFile(fileNames[position]);
+
+            File inFile = getLatestStorageFile(mFileNames[position]);
             getActionBar().setTitle(inFile.getName());
             try {
                 BufferedReader buf = new BufferedReader(new FileReader(inFile));
-                int bufferSize = 10;
-//                final CircularArrayList<String> titles = new CircularArrayList<String>(bufferSize);
-//                final CircularArrayList<String> bodys = new CircularArrayList<String>(bufferSize);
-
-
-//                String tmp;
-//                while ((tmp = buf.readLine()) != null) {
-//                    int pos = tmp.indexOf(":");
-//                    try{
-//                        titles.add(tmp.substring(0,pos) + "\n");
-//                        bodys.add(tmp.substring(pos+1) + "\n");
-//                    }
-//                    catch(IllegalStateException e){
-//                        titles.remove(0);
-//                        bodys.remove(0);
-//                        titles.add(tmp.substring(0,pos) + "\n");
-//                        bodys.add(tmp.substring(pos+1) + "\n");
-//                    }
-//                }
 
                 final ArrayList<String> titles = new ArrayList<String>();
                 final ArrayList<String> bodys = new ArrayList<String>();
@@ -151,7 +136,6 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
                     titles.add(tmp.substring(0, pos) + "\n");
                     bodys.add(tmp.substring(pos + 1) + "\n");
                 }
-
 
                 ArrayAdapter adapter = new ArrayAdapter(this, R.layout.simple_list_item_small_title, android.R.id.text1, titles) {
                     @Override
@@ -174,13 +158,18 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
                         String inContent = ((TextView) view.findViewById(android.R.id.text2)).getText().toString();
                         int spacePos = inTime.indexOf(" ");
                         int separatorPos = inTime.lastIndexOf(".");
-                        int hour = 0;
-                        if (-1 != spacePos)
-                             hour = Integer.parseInt(inTime.substring(spacePos+1, separatorPos));
-                        else
-                            hour = Integer.parseInt(inTime.substring(0, separatorPos));
+                        int hour = 0, min = 0;
+                        try {
+                            if (-1 != spacePos)
+                                hour = Integer.parseInt(inTime.substring(spacePos + 1, separatorPos));
+                            else
+                                hour = Integer.parseInt(inTime.substring(0, separatorPos));
 
-                        int min = Integer.parseInt(inTime.substring(separatorPos + 1, separatorPos + 3));
+                            min = Integer.parseInt(inTime.substring(separatorPos + 1, separatorPos + 3));
+                        } catch (Exception e) {
+                            Toast.makeText(DetailActivity.this, "时间数据格式非法", Toast.LENGTH_SHORT).show();
+                        }
+
                         int NUMBER_OF_VALUES = 0;
                         float PICKER_RANGE = 0;
                         switch(mCurrentAct)
@@ -202,13 +191,15 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
                         }
 
                         int startPos = getFirstDig(inContent);
-                        int endPos = getlastDig(inContent);
+                        int endPos = getLastDig(inContent);
                         float fValue = 0f;
-
-                        if(-1 != startPos && -1 != endPos) {
-                            fValue = Float.parseFloat(inContent.substring(startPos, endPos));
+                        try {
+                            if (-1 != startPos && -1 != endPos) {
+                                fValue = Float.parseFloat(inContent.substring(startPos, endPos + 1));
+                            }
+                        } catch (Exception e) {
+                            Toast.makeText(DetailActivity.this, "数据格式非法", Toast.LENGTH_SHORT).show();
                         }
-
                         int valuePos = 0;
                         String[] displayedValues = new String[NUMBER_OF_VALUES];
                         for(int i=0; i<NUMBER_OF_VALUES; i++) {
@@ -218,23 +209,25 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
                             displayedValues[i] = String.valueOf(tmp);
                         }
 
-                        Toast.makeText(DetailActivity.this, String.valueOf(hour) + ":" + String.valueOf(min), Toast.LENGTH_SHORT).show();
-
-                        getDialog(hour,min,displayedValues, valuePos, position).show();
+                        getDialog(hour, min, displayedValues, valuePos, titles, bodys, position).show();
                     }
                 });
                 rightView.setAdapter(adapter);
-
+                adapter.notifyDataSetChanged();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private AlertDialog getDialog(int hour, int min, String[] displayedValues, int valuePos, int itemPos){
+    private AlertDialog getDialog(final int hour, final int min, final String[] displayedValues, int valuePos,
+                                  final ArrayList<String> titles, final ArrayList<String> bodys, final int itemPos) {
         //start Dialog to modify clicked line
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(DetailActivity.this);
-        dialogBuilder.setTitle("test").setMessage("test");
+        String[] actions = getResources().getStringArray(R.array.actions);
+        String[] messages = getResources().getStringArray(R.array.dialogMsg);
+        dialogBuilder.setTitle(actions[mCurrentAct]);
+//                .setMessage(messages[mCurrentAct]);
 
         LayoutInflater inflater = DetailActivity.this.getLayoutInflater();
         View layout = inflater.inflate(R.layout.dialog_change, null);
@@ -242,7 +235,7 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
 
         final TimePicker tPicker =  (TimePicker)layout.findViewById(R.id.timePicker);
 //        ColorNumberPicker nPicker = (ColorNumberPicker)layout.findViewById(R.id.colorNumberPicker);
-        NumberPicker nPicker = (NumberPicker)layout.findViewById(R.id.numberPicker);
+        final NumberPicker nPicker = (NumberPicker) layout.findViewById(R.id.numberPicker);
         tPicker.setCurrentHour(hour);
         tPicker.setCurrentMinute(min);
         tPicker.setBackgroundColor(mColorList[mCurrentAct]);
@@ -261,24 +254,73 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
 
         dialogBuilder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-//TODO            change data on list view and save to file
-
+                String title = String.format("%02d", tPicker.getCurrentHour()) + "." + String.format("%02d", tPicker.getCurrentMinute()) + "\n";
+                int currentValuePos = nPicker.getValue();
+                String body = "";
+                switch (mCurrentAct) {
+                    case 0: {
+                        body = "宝宝已经喝了" + displayedValues[currentValuePos] + "毫升奶\n";
+                    }
+                    break;
+                    case 1: {
+                        body = " 宝宝已经拉了" + displayedValues[currentValuePos] + "次臭臭\n";
+                    }
+                    break;
+                    case 2: {
+                        body = " 宝宝已经睡了" + displayedValues[currentValuePos] + "小时觉觉\n";
+                    }
+                    break;
+                    default:
+                        break;
+                }
+                titles.set(itemPos, title);
+                bodys.set(itemPos, body);
+                writeFile(titles, bodys);
             }
         });
         dialogBuilder.setNeutralButton(R.string.delete, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-
+                titles.remove(itemPos);
+                bodys.remove(itemPos);
+                writeFile(titles, bodys);
             }
         });
         dialogBuilder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-
+                dialog.cancel();
             }
         });
 
         AlertDialog dialog = dialogBuilder.create();
         return dialog;
     }
+
+    private boolean writeFile(ArrayList<String> titles, ArrayList<String> bodys) {
+        if (isExternalStorageWritable()) {
+            File outFile = getLatestStorageFile(mFileNames[mCurrentAct]);
+            try {
+                FileOutputStream fos = new FileOutputStream(outFile, false);
+
+                for (int i = 0; i < titles.size(); ++i) {
+                    String title = titles.get(i);
+                    String message = title.substring(0, title.length() - 1) + ":" + bodys.get(i);
+                    fos.write(message.getBytes());
+                }
+                fos.close();
+
+                Toast.makeText(DetailActivity.this, "文件写入成功", Toast.LENGTH_SHORT).show();
+                setTextViewByAct(mCurrentAct);
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            Toast.makeText(DetailActivity.this, "文件系统不可写", Toast.LENGTH_SHORT).show();
+        }
+        return false;
+    }
+
     /* Checks if external storage is available for read and write */
     private boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
@@ -299,10 +341,10 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
             if(string.charAt(pos)>=48 && string.charAt(pos)<=57)
                 return pos;
         }
-      return -1;
-    };
+        return -1;
+    }
 
-    private int getlastDig(String string){
+    private int getLastDig(String string) {
         int pos = string.length()-1;
         for(;pos>=0;--pos)
         {
@@ -310,7 +352,8 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
                 return pos;
         }
         return -1;
-    };
+    }
+
     private File getLatestStorageFile(String dir) {
         File f = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+File.separator+dir);
         if(f.exists()) {

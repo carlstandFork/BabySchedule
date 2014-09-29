@@ -21,10 +21,10 @@ import java.io.FileOutputStream;
 
 
 public class MainActivity extends Activity
-        implements ItemFragment.OnFragmentInteractionListener{
+        implements ItemFragment.OnFragmentInteractionListener {
 
-    private int[] mColorList =new int[]{Color.YELLOW, Color.MAGENTA, Color.CYAN};
-    private int[] mBackgroundPics  = new int[]{R.drawable.eat, R.drawable.poo,R.drawable.sleep};
+    private int[] mColorList = new int[]{Color.YELLOW, Color.MAGENTA, Color.CYAN};
+    private int[] mBackgroundPics = new int[]{R.drawable.eat, R.drawable.poo, R.drawable.sleep};
     private int mCurrentAct = 0;
     private long exitTime = 0;
 
@@ -33,7 +33,7 @@ public class MainActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_large);
 
-        ItemFragment itemFragment = (ItemFragment)getFragmentManager().findFragmentById(R.id.left_fragment);
+        ItemFragment itemFragment = (ItemFragment) getFragmentManager().findFragmentById(R.id.left_fragment);
         itemFragment.setSelectedItem(mCurrentAct);
         setRightBackgroundByAction(mCurrentAct);
 
@@ -53,22 +53,20 @@ public class MainActivity extends Activity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        switch(id){
+        switch (id) {
             case R.id.action_settings:
-                Toast.makeText(this,"设定功能还没做好 :P", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "设定功能还没做好 :P", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.action_statistic:
-                Toast.makeText(this,"统计功能仍在拼命(>_<)开发中", Toast.LENGTH_SHORT).show();
-                if(isExternalStorageReadable()){
+                Toast.makeText(this, "统计功能仍在拼命(>_<)开发中", Toast.LENGTH_SHORT).show();
+                if (isExternalStorageReadable()) {
 
-                }
-                else
-                {
-                    Toast.makeText(this,"文件系统不可读",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "文件系统不可读", Toast.LENGTH_SHORT).show();
                 }
                 return true;
             case R.id.action_detail:
-                Toast.makeText(this,"明细即将打开:)", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "明细即将打开:)", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent();
                 intent.setClass(MainActivity.this, DetailActivity.class);
                 startActivity(intent);
@@ -79,8 +77,7 @@ public class MainActivity extends Activity
         return super.onOptionsItemSelected(item);
     }
 
-    public void onButtonNextPressed(View view)
-    {
+    public void onButtonNextPressed(View view) {
 //        Toast.makeText(this,"button next on act" + mCurrentAct + "pressed", Toast.LENGTH_LONG).show();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -92,8 +89,7 @@ public class MainActivity extends Activity
         final NumberPicker picker = new ColorNumberPicker(getApplicationContext());
         int NUMBER_OF_VALUES = 0;
         float PICKER_RANGE = 0;
-        switch(mCurrentAct)
-        {
+        switch (mCurrentAct) {
             case 0://eat
                 NUMBER_OF_VALUES = 25;
                 PICKER_RANGE = 20;
@@ -111,8 +107,8 @@ public class MainActivity extends Activity
         }
 
         final String[] displayedValues = new String[NUMBER_OF_VALUES];
-        for(int i=0; i<NUMBER_OF_VALUES; i++)
-            displayedValues[i] = String.valueOf(PICKER_RANGE * (i+1));
+        for (int i = 0; i < NUMBER_OF_VALUES; i++)
+            displayedValues[i] = String.valueOf(PICKER_RANGE * (i + 1));
 
         picker.setMinValue(0);
         picker.setMaxValue(NUMBER_OF_VALUES - 1);
@@ -125,24 +121,25 @@ public class MainActivity extends Activity
 
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                DatePicker DP = (DatePicker)(MainActivity.this.findViewById(R.id.datePicker));
-                TimePicker TP = (TimePicker)(MainActivity.this.findViewById(R.id.timePicker));
-                String date = DP.getYear()+"."+String.format("%02d",DP.getMonth()+1) +"."+ String.format("%02d",DP.getDayOfMonth());
-                String time = String.format("%02d",TP.getCurrentHour()) +"." +String.format("%02d", TP.getCurrentMinute());
-                String dateAndTime = date + " "+time;
+                DatePicker DP = (DatePicker) (MainActivity.this.findViewById(R.id.datePicker));
+                TimePicker TP = (TimePicker) (MainActivity.this.findViewById(R.id.timePicker));
+                String date = DP.getYear() + "." + String.format("%02d", DP.getMonth() + 1) + "." + String.format("%02d", DP.getDayOfMonth());
+                String time = String.format("%02d", TP.getCurrentHour()) + "." + String.format("%02d", TP.getCurrentMinute());
 
-                String message ="";
-                switch(mCurrentAct)
-                {
+                String message = "";
+                switch (mCurrentAct) {
                     case 0: {
                         message = time + ": 宝宝已经喝了" + displayedValues[picker.getValue()] + "毫升奶\n";
-                    }   break;
+                    }
+                    break;
                     case 1: {
                         message = time + ": 宝宝已经拉了" + displayedValues[picker.getValue()] + "次臭臭\n";
-                    }   break;
+                    }
+                    break;
                     case 2: {
                         message = time + ": 宝宝已经睡了" + displayedValues[picker.getValue()] + "小时觉觉\n";
-                    }   break;
+                    }
+                    break;
                     default:
                         break;
                 }
@@ -179,15 +176,15 @@ public class MainActivity extends Activity
 //        window.setAttributes(lp);
         dialog.show();
     }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN){
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
 
-            if((System.currentTimeMillis()-exitTime) > 2000){
+            if ((System.currentTimeMillis() - exitTime) > 2000) {
                 Toast.makeText(getApplicationContext(), R.string.press_again_exit, Toast.LENGTH_SHORT).show();
                 exitTime = System.currentTimeMillis();
-            }
-            else{
+            } else {
                 finish();
                 System.exit(0);
             }
@@ -198,8 +195,7 @@ public class MainActivity extends Activity
     }
 
     @Override
-    public void onFragmentInteraction(String id, int position, View view)
-    {
+    public void onFragmentInteraction(String id, int position, View view) {
         mCurrentAct = position % mColorList.length;
         view.setBackgroundColor(mColorList[mCurrentAct]);
 
@@ -222,18 +218,17 @@ public class MainActivity extends Activity
 
     private File getStorageFile(String dir, String fileName) {
         File f = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), dir);
-        if(!f.exists()) {
+        if (!f.exists()) {
             if (f.mkdirs()) {
                 return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + File.separator + dir, fileName);
             }
-        }
-        else
-            return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+File.separator+dir, fileName);
+        } else
+            return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + File.separator + dir, fileName);
 
         return null;
     }
 
-    private void setRightBackgroundByAction(int action){
+    private void setRightBackgroundByAction(int action) {
         View rightView = getFragmentManager().findFragmentById(R.id.right_fragment).getView();
         if (rightView != null) {
             rightView.setBackgroundResource(mBackgroundPics[action]);
