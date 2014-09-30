@@ -24,7 +24,7 @@ public class MainActivity extends Activity
 
     private int[] mColorList = new int[]{Color.YELLOW, Color.MAGENTA, Color.CYAN};
     private int[] mBackgroundPics = new int[]{R.drawable.eat, R.drawable.poo, R.drawable.sleep};
-    private int mCurrentAct = BabyUtils.EAT;
+    private int mCurrentAct = Utils.EAT;
     private long exitTime = 0;
 
     @Override
@@ -57,7 +57,7 @@ public class MainActivity extends Activity
                 Toast.makeText(this, "设定功能还没做好 :P", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.action_statistic:
-                if (BabyUtils.isExternalStorageReadable()) {
+                if (Utils.isExternalStorageReadable()) {
                     Toast.makeText(this, "统计功能仍在拼命(>_<)开发中", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(this, "文件系统不可读", Toast.LENGTH_SHORT).show();
@@ -86,7 +86,7 @@ public class MainActivity extends Activity
 
         final NumberPicker picker = new ColorNumberPicker(getApplicationContext());
 
-        final String[] displayedValues = BabyUtils.getDisplayValuesByAct(mCurrentAct);
+        final String[] displayedValues = Utils.getDisplayValuesByAct(mCurrentAct);
 
         picker.setMinValue(0);
         picker.setMaxValue(displayedValues.length - 1);
@@ -104,15 +104,15 @@ public class MainActivity extends Activity
                 String date = DP.getYear() + "." + String.format("%02d", DP.getMonth() + 1) + "." + String.format("%02d", DP.getDayOfMonth());
                 String time = String.format("%02d", TP.getCurrentHour()) + "." + String.format("%02d", TP.getCurrentMinute());
 
-                String body = BabyUtils.getMessageBodyByAct(mCurrentAct, displayedValues, picker.getValue());
+                String body = Utils.getMessageBodyByAct(mCurrentAct, displayedValues, picker.getValue());
 
                 String message = time + ":" + body;
 
                 Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
 //              save to the file
-                if (BabyUtils.isExternalStorageWritable()) {
+                if (Utils.isExternalStorageWritable()) {
                     String[] fileNames = getResources().getStringArray(R.array.fileName);
-                    File outFile = BabyUtils.getStorageFile(fileNames[mCurrentAct], date);
+                    File outFile = Utils.getStorageFile(fileNames[mCurrentAct], date);
                     try {
                         FileOutputStream fos = new FileOutputStream(outFile, true);
                         fos.write(message.getBytes());

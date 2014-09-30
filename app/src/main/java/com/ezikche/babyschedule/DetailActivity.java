@@ -37,7 +37,7 @@ import java.util.List;
 public class DetailActivity extends Activity implements ItemFragment.OnFragmentInteractionListener {
     private int[] mBackgroundPics = new int[]{R.drawable.eat, R.drawable.poo,R.drawable.sleep};
     private int[] mColorList = new int[]{Color.YELLOW, Color.MAGENTA, Color.CYAN};
-    private int mCurrentAct = BabyUtils.EAT;
+    private int mCurrentAct = Utils.EAT;
     private File[] mSortedFiles = null;
     private int mCurrentFileIndex = 0;
     private String[] mFileNames = null;
@@ -126,7 +126,7 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
     }
 
     private void setTextViewByAct(int position) {
-        if (BabyUtils.isExternalStorageReadable()) {
+        if (Utils.isExternalStorageReadable()) {
 
             File inFile = getLatestStorageFile(mFileNames[position]);
             try {
@@ -180,10 +180,10 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
                             Toast.makeText(DetailActivity.this, "时间数据格式非法", Toast.LENGTH_SHORT).show();
                         }
 
-                        String[] displayedValues = BabyUtils.getDisplayValuesByAct(mCurrentAct);
+                        String[] displayedValues = Utils.getDisplayValuesByAct(mCurrentAct);
 
-                        int startPos = BabyUtils.getFirstDig(inContent);
-                        int endPos = BabyUtils.getLastDig(inContent);
+                        int startPos = Utils.getFirstDig(inContent);
+                        int endPos = Utils.getLastDig(inContent);
                         float oldValue = 0f;
                         try {
                             if (-1 != startPos && -1 != endPos) {
@@ -241,7 +241,7 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
             public void onClick(DialogInterface dialog, int id) {
                 String title = String.format("%02d", tPicker.getCurrentHour()) + "." + String.format("%02d", tPicker.getCurrentMinute()) + "\n";
                 int currentValuePos = nPicker.getValue();
-                String body = BabyUtils.getMessageBodyByAct(mCurrentAct, displayedValues, currentValuePos);
+                String body = Utils.getMessageBodyByAct(mCurrentAct, displayedValues, currentValuePos);
                 titles.set(itemPos, title);
                 bodys.set(itemPos, body);
                 writeFile(titles, bodys);
@@ -264,7 +264,7 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
     }
 
     private boolean writeFile(ArrayList<String> titles, ArrayList<String> bodys) {
-        if (BabyUtils.isExternalStorageWritable()) {
+        if (Utils.isExternalStorageWritable()) {
             File outFile = getLatestStorageFile(mFileNames[mCurrentAct]);
             try {
                 FileOutputStream fos = new FileOutputStream(outFile, false);
