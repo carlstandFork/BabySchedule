@@ -46,6 +46,7 @@ public class EatFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
     public EatFragment() {
         // Required empty public constructor
     }
