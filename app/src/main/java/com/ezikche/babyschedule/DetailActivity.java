@@ -37,7 +37,7 @@ import java.util.List;
 public class DetailActivity extends Activity implements ItemFragment.OnFragmentInteractionListener {
     private int[] mBackgroundPics = new int[]{R.drawable.eat, R.drawable.poo,R.drawable.sleep};
     private int[] mColorList = new int[]{Color.YELLOW, Color.MAGENTA, Color.CYAN};
-    private int mCurrentAct = 0;
+    private int mCurrentAct = BabyUtils.EAT;
     private File[] mSortedFiles = null;
     private int mCurrentFileIndex = 0;
     private String[] mFileNames = null;
@@ -46,7 +46,12 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
         super.onCreate(savedInstanceState);
         mFileNames = getResources().getStringArray(R.array.fileName);
         setContentView(R.layout.layout_large_detail);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+
+        try {
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         setTextViewByAct(mCurrentAct);
         setRightBackgroundByAction(mCurrentAct);
@@ -121,10 +126,15 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
     }
 
     private void setTextViewByAct(int position) {
-        if (isExternalStorageReadable()) {
+        if (BabyUtils.isExternalStorageReadable()) {
 
             File inFile = getLatestStorageFile(mFileNames[position]);
-            getActionBar().setTitle(inFile.getName());
+            try {
+                getActionBar().setTitle(inFile.getName());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             try {
                 BufferedReader buf = new BufferedReader(new FileReader(inFile));
 
@@ -170,44 +180,20 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
                             Toast.makeText(DetailActivity.this, "时间数据格式非法", Toast.LENGTH_SHORT).show();
                         }
 
-                        int NUMBER_OF_VALUES = 0;
-                        float PICKER_RANGE = 0;
-                        switch(mCurrentAct)
-                        {
-                            case 0://eat
-                                NUMBER_OF_VALUES = 25;
-                                PICKER_RANGE = 20;
-                                break;
-                            case 1://poo
-                                NUMBER_OF_VALUES = 10;
-                                PICKER_RANGE = 1;
-                                break;
-                            case 2://sleep
-                                NUMBER_OF_VALUES = 20;
-                                PICKER_RANGE = 0.5f;
-                                break;
-                            default:
-                                break;
-                        }
+                        String[] displayedValues = BabyUtils.getDisplayValuesByAct(mCurrentAct);
 
-                        int startPos = getFirstDig(inContent);
-                        int endPos = getLastDig(inContent);
-                        float fValue = 0f;
+                        int startPos = BabyUtils.getFirstDig(inContent);
+                        int endPos = BabyUtils.getLastDig(inContent);
+                        float oldValue = 0f;
                         try {
                             if (-1 != startPos && -1 != endPos) {
-                                fValue = Float.parseFloat(inContent.substring(startPos, endPos + 1));
+                                oldValue = Float.parseFloat(inContent.substring(startPos, endPos + 1));
                             }
                         } catch (Exception e) {
                             Toast.makeText(DetailActivity.this, "数据格式非法", Toast.LENGTH_SHORT).show();
                         }
-                        int valuePos = 0;
-                        String[] displayedValues = new String[NUMBER_OF_VALUES];
-                        for(int i=0; i<NUMBER_OF_VALUES; i++) {
-                            float tmp = PICKER_RANGE * (i + 1);
-                            if ( fValue == tmp)
-                                valuePos = i;
-                            displayedValues[i] = String.valueOf(tmp);
-                        }
+
+                        int valuePos = Arrays.asList(displayedValues).indexOf(String.valueOf(oldValue));
 
                         getDialog(hour, min, displayedValues, valuePos, titles, bodys, position).show();
                     }
@@ -225,7 +211,6 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
         //start Dialog to modify clicked line
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(DetailActivity.this);
         String[] actions = getResources().getStringArray(R.array.actions);
-        String[] messages = getResources().getStringArray(R.array.dialogMsg);
         dialogBuilder.setTitle(actions[mCurrentAct]);
 //                .setMessage(messages[mCurrentAct]);
 
@@ -256,23 +241,7 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
             public void onClick(DialogInterface dialog, int id) {
                 String title = String.format("%02d", tPicker.getCurrentHour()) + "." + String.format("%02d", tPicker.getCurrentMinute()) + "\n";
                 int currentValuePos = nPicker.getValue();
-                String body = "";
-                switch (mCurrentAct) {
-                    case 0: {
-                        body = "宝宝已经喝了" + displayedValues[currentValuePos] + "毫升奶\n";
-                    }
-                    break;
-                    case 1: {
-                        body = " 宝宝已经拉了" + displayedValues[currentValuePos] + "次臭臭\n";
-                    }
-                    break;
-                    case 2: {
-                        body = " 宝宝已经睡了" + displayedValues[currentValuePos] + "小时觉觉\n";
-                    }
-                    break;
-                    default:
-                        break;
-                }
+                String body = BabyUtils.getMessageBodyByAct(mCurrentAct, displayedValues, currentValuePos);
                 titles.set(itemPos, title);
                 bodys.set(itemPos, body);
                 writeFile(titles, bodys);
@@ -291,12 +260,11 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
             }
         });
 
-        AlertDialog dialog = dialogBuilder.create();
-        return dialog;
+        return dialogBuilder.create();
     }
 
     private boolean writeFile(ArrayList<String> titles, ArrayList<String> bodys) {
-        if (isExternalStorageWritable()) {
+        if (BabyUtils.isExternalStorageWritable()) {
             File outFile = getLatestStorageFile(mFileNames[mCurrentAct]);
             try {
                 FileOutputStream fos = new FileOutputStream(outFile, false);
@@ -319,39 +287,6 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
             Toast.makeText(DetailActivity.this, "文件系统不可写", Toast.LENGTH_SHORT).show();
         }
         return false;
-    }
-
-    /* Checks if external storage is available for read and write */
-    private boolean isExternalStorageWritable() {
-        String state = Environment.getExternalStorageState();
-        return Environment.MEDIA_MOUNTED.equals(state);
-    }
-
-    /* Checks if external storage is available to at least read */
-    private boolean isExternalStorageReadable() {
-        String state = Environment.getExternalStorageState();
-        return Environment.MEDIA_MOUNTED.equals(state) ||
-                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
-    }
-
-    private int getFirstDig(String string){
-        int pos = 0;
-        for(;pos<string.length();++pos)
-        {
-            if(string.charAt(pos)>=48 && string.charAt(pos)<=57)
-                return pos;
-        }
-        return -1;
-    }
-
-    private int getLastDig(String string) {
-        int pos = string.length()-1;
-        for(;pos>=0;--pos)
-        {
-            if(string.charAt(pos)>=48 && string.charAt(pos)<=57)
-                return pos;
-        }
-        return -1;
     }
 
     private File getLatestStorageFile(String dir) {

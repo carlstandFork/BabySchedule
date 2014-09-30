@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,7 +24,7 @@ public class MainActivity extends Activity
 
     private int[] mColorList = new int[]{Color.YELLOW, Color.MAGENTA, Color.CYAN};
     private int[] mBackgroundPics = new int[]{R.drawable.eat, R.drawable.poo, R.drawable.sleep};
-    private int mCurrentAct = 0;
+    private int mCurrentAct = BabyUtils.EAT;
     private long exitTime = 0;
 
     @Override
@@ -58,9 +57,8 @@ public class MainActivity extends Activity
                 Toast.makeText(this, "设定功能还没做好 :P", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.action_statistic:
-                Toast.makeText(this, "统计功能仍在拼命(>_<)开发中", Toast.LENGTH_SHORT).show();
-                if (isExternalStorageReadable()) {
-
+                if (BabyUtils.isExternalStorageReadable()) {
+                    Toast.makeText(this, "统计功能仍在拼命(>_<)开发中", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(this, "文件系统不可读", Toast.LENGTH_SHORT).show();
                 }
@@ -87,31 +85,11 @@ public class MainActivity extends Activity
                 .setMessage(messages[mCurrentAct]);
 
         final NumberPicker picker = new ColorNumberPicker(getApplicationContext());
-        int NUMBER_OF_VALUES = 0;
-        float PICKER_RANGE = 0;
-        switch (mCurrentAct) {
-            case 0://eat
-                NUMBER_OF_VALUES = 25;
-                PICKER_RANGE = 20;
-                break;
-            case 1://poo
-                NUMBER_OF_VALUES = 10;
-                PICKER_RANGE = 1;
-                break;
-            case 2://sleep
-                NUMBER_OF_VALUES = 20;
-                PICKER_RANGE = 0.5f;
-                break;
-            default:
-                break;
-        }
 
-        final String[] displayedValues = new String[NUMBER_OF_VALUES];
-        for (int i = 0; i < NUMBER_OF_VALUES; i++)
-            displayedValues[i] = String.valueOf(PICKER_RANGE * (i + 1));
+        final String[] displayedValues = BabyUtils.getDisplayValuesByAct(mCurrentAct);
 
         picker.setMinValue(0);
-        picker.setMaxValue(NUMBER_OF_VALUES - 1);
+        picker.setMaxValue(displayedValues.length - 1);
         picker.setDisplayedValues(displayedValues);
         picker.setWrapSelectorWheel(false);
         picker.setBackgroundColor(mColorList[mCurrentAct]);
@@ -126,29 +104,15 @@ public class MainActivity extends Activity
                 String date = DP.getYear() + "." + String.format("%02d", DP.getMonth() + 1) + "." + String.format("%02d", DP.getDayOfMonth());
                 String time = String.format("%02d", TP.getCurrentHour()) + "." + String.format("%02d", TP.getCurrentMinute());
 
-                String message = "";
-                switch (mCurrentAct) {
-                    case 0: {
-                        message = time + ": 宝宝已经喝了" + displayedValues[picker.getValue()] + "毫升奶\n";
-                    }
-                    break;
-                    case 1: {
-                        message = time + ": 宝宝已经拉了" + displayedValues[picker.getValue()] + "次臭臭\n";
-                    }
-                    break;
-                    case 2: {
-                        message = time + ": 宝宝已经睡了" + displayedValues[picker.getValue()] + "小时觉觉\n";
-                    }
-                    break;
-                    default:
-                        break;
-                }
+                String body = BabyUtils.getMessageBodyByAct(mCurrentAct, displayedValues, picker.getValue());
+
+                String message = time + ":" + body;
 
                 Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
 //              save to the file
-                if (isExternalStorageWritable()) {
+                if (BabyUtils.isExternalStorageWritable()) {
                     String[] fileNames = getResources().getStringArray(R.array.fileName);
-                    File outFile = getStorageFile(fileNames[mCurrentAct], date);
+                    File outFile = BabyUtils.getStorageFile(fileNames[mCurrentAct], date);
                     try {
                         FileOutputStream fos = new FileOutputStream(outFile, true);
                         fos.write(message.getBytes());
@@ -201,31 +165,6 @@ public class MainActivity extends Activity
 
         setRightBackgroundByAction(mCurrentAct);
 
-    }
-
-    /* Checks if external storage is available for read and write */
-    private boolean isExternalStorageWritable() {
-        String state = Environment.getExternalStorageState();
-        return Environment.MEDIA_MOUNTED.equals(state);
-    }
-
-    /* Checks if external storage is available to at least read */
-    private boolean isExternalStorageReadable() {
-        String state = Environment.getExternalStorageState();
-        return Environment.MEDIA_MOUNTED.equals(state) ||
-                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
-    }
-
-    private File getStorageFile(String dir, String fileName) {
-        File f = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), dir);
-        if (!f.exists()) {
-            if (f.mkdirs()) {
-                return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + File.separator + dir, fileName);
-            }
-        } else
-            return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + File.separator + dir, fileName);
-
-        return null;
     }
 
     private void setRightBackgroundByAction(int action) {
