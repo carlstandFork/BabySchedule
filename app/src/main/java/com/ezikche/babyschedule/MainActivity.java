@@ -58,13 +58,16 @@ public class MainActivity extends Activity
                 return true;
             case R.id.action_statistic:
                 if (Utils.isExternalStorageReadable()) {
-                    Toast.makeText(this, "统计功能仍在拼命(>_<)开发中", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(this, "统计功能仍在拼命(>_<)开发中", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent();
+                    intent.setClass(MainActivity.this, StatisticActivity.class);
+                    startActivity(intent);
                 } else {
                     Toast.makeText(this, "文件系统不可读", Toast.LENGTH_SHORT).show();
                 }
                 return true;
             case R.id.action_detail:
-                Toast.makeText(this, "明细即将打开:)", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "明细即将打开:)", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent();
                 intent.setClass(MainActivity.this, DetailActivity.class);
                 startActivity(intent);

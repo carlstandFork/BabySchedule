@@ -11,7 +11,14 @@ public class StatisticActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_statistic);
+        setContentView(new CombinedTemperatureChart().execute(this));
+        setTitle(getResources().getText(R.string.title_activity_statistic));
+
+        try {
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
