@@ -65,8 +65,8 @@ public class CombinedTemperatureChart extends AbstractDemoChart {
             r.setLineWidth(5);
             r.setFillPoints(true);
         }
-        setChartSettings(renderer, "Weather data", "Month", "Temperature", 0.5, 12.5, 0, 40,
-                Color.LTGRAY, Color.LTGRAY);
+        setChartSettings(renderer, "", "日期", "Temperature", 0.5, 12.5, 0, 40,
+                Color.BLACK, Color.BLACK);
 
         renderer.setXLabels(12);
         renderer.setYLabels(10);
@@ -115,6 +115,7 @@ public class CombinedTemperatureChart extends AbstractDemoChart {
         dataset.addSeries(0, waterSeries);
         renderer.addSeriesRenderer(0, lightRenderer);
         renderer.addSeriesRenderer(0, waterRenderer);
+        renderer.setMarginsColor(Color.WHITE);
         waterRenderer.setDisplayChartValues(true);
         waterRenderer.setChartValuesTextSize(10);
 

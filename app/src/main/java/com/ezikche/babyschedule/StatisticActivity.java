@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 
 public class StatisticActivity extends Activity {
@@ -11,7 +12,9 @@ public class StatisticActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(new CombinedTemperatureChart().execute(this));
+        View view = new MultipleTemperatureChart().execute(this);
+//        View view = new CombinedTemperatureChart().execute(this);
+        setContentView(view);
         setTitle(getResources().getText(R.string.title_activity_statistic));
 
         try {
