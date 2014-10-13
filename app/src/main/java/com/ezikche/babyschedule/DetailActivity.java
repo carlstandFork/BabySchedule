@@ -85,14 +85,14 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
                     NavUtils.navigateUpTo(this, upIntent);
                 }
                 break;
-            case R.id.action_next:
+            case R.id.action_prev:
                 ++mCurrentFileIndex;
                 if(mCurrentFileIndex>mSortedFiles.length-1)
                     mCurrentFileIndex = 0;
                 setTextViewByAct(mCurrentAct);
                 setRightBackgroundByAction(mCurrentAct);
                 break;
-            case R.id.action_prev:
+            case R.id.action_next:
                 --mCurrentFileIndex;
                 if(mCurrentFileIndex<0)
                     mCurrentFileIndex = mSortedFiles.length -1;
@@ -300,13 +300,13 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
                     @Override
                     public int compare(File o1, File o2) {
                         if (o1.isDirectory() && o2.isFile())
-                            return 11;
+                            return -1;
                         if (o1.isFile() && o2.isDirectory())
                             return -1;
                         return o2.getName().compareTo(o1.getName());
                     }
                 });
-                return mSortedFiles[mCurrentFileIndex];
+                return files.get(mCurrentFileIndex);
             }
         }
         return null;

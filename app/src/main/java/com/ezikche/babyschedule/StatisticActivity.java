@@ -13,7 +13,6 @@ public class StatisticActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         View view = new MultipleTemperatureChart().execute(this);
-//        View view = new CombinedTemperatureChart().execute(this);
         setContentView(view);
         setTitle(getResources().getText(R.string.title_activity_statistic));
 

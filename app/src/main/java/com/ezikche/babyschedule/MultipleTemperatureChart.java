@@ -18,6 +18,7 @@ package com.ezikche.babyschedule;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint.Align;
+import android.os.Environment;
 import android.view.View;
 
 import org.achartengine.ChartFactory;
@@ -26,7 +27,11 @@ import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -41,7 +46,7 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
    * @return the built intent
    */
   public View execute(Context context) {
-    String[] titles = new String[] { "Air temperature" };
+    String[] titles = new String[] { "喝奶量" };
     List<double[]> x = new ArrayList<double[]>();
     for (int i = 0; i < titles.length; i++) {
       x.add(new double[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 });
@@ -58,7 +63,7 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
       XYSeriesRenderer r = (XYSeriesRenderer) renderer.getSeriesRendererAt(i);
       r.setLineWidth(3f);
     }
-    setChartSettings(renderer, "Average temperature", "Month", "Temperature", 0.5, 12.5, 0, 32,
+    setChartSettings(renderer, "统计数据", "天", "ML", 0.5, 12.5, 0, 32,
         Color.BLACK, Color.BLACK);
     renderer.setXLabels(12);
     renderer.setYLabels(10);
@@ -74,16 +79,40 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
     renderer.setYLabelsColor(0, colors[0]);
     renderer.setYLabelsColor(1, colors[1]);
 
-    renderer.setYTitle("Hours", 1);
+    renderer.setYTitle("次", 1);
     renderer.setYAxisAlign(Align.RIGHT, 1);
     renderer.setYLabelsAlign(Align.LEFT, 1);
     renderer.setMarginsColor(Color.WHITE);
     XYMultipleSeriesDataset dataset = buildDataset(titles, x, values);
     values.clear();
     values.add(new double[] { 4.3, 4.9, 5.9, 8.8, 10.8, 11.9, 13.6, 12.8, 11.4, 9.5, 7.5, 5.5 });
-    addXYSeries(dataset, new String[] { "Sunshine hours" }, x, values, 1);
+    addXYSeries(dataset, new String[] { "臭臭次数" }, x, values, 1);
 
     View view = ChartFactory.getCubeLineChartView(context, dataset, renderer, 0.3f);
     return view;
   }
+
+
+    private List<File> getLatestStorageFile(String dir) {
+        File f = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+File.separator+dir);
+        if(f.exists()) {
+            File[] sortedFiles = f.listFiles();
+            if(null != sortedFiles)
+            {
+                List<File> files = Arrays.asList(sortedFiles);
+                Collections.sort(files, new Comparator<File>() {
+                    @Override
+                    public int compare(File o1, File o2) {
+                        if (o1.isDirectory() && o2.isFile())
+                            return -1;
+                        if (o1.isFile() && o2.isDirectory())
+                            return -1;
+                        return o2.getName().compareTo(o1.getName());
+                    }
+                });
+                return files;
+            }
+        }
+        return null;
+    }
 }
