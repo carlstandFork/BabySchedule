@@ -182,13 +182,9 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
 
                         String[] displayedValues = Utils.getDisplayValuesByAct(mCurrentAct);
 
-                        int startPos = Utils.getFirstDig(inContent);
-                        int endPos = Utils.getLastDig(inContent);
-                        float oldValue = 0f;
+                        double oldValue = 0;
                         try {
-                            if (-1 != startPos && -1 != endPos) {
-                                oldValue = Float.parseFloat(inContent.substring(startPos, endPos + 1));
-                            }
+                            oldValue = Utils.getDigValue(inContent);
                         } catch (Exception e) {
                             Toast.makeText(DetailActivity.this, "数据格式非法", Toast.LENGTH_SHORT).show();
                         }

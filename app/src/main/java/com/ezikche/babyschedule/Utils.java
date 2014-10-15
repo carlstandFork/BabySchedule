@@ -79,6 +79,16 @@ public class Utils {
         return -1;
     }
 
+    public static double getDigValue(String inContent) {
+        int startPos = Utils.getFirstDig(inContent);
+        int endPos = Utils.getLastDig(inContent);
+        double value = 0f;
+            if (-1 != startPos && -1 != endPos) {
+                value = Float.parseFloat(inContent.substring(startPos, endPos + 1));
+            }
+        return value;
+    }
+
     /* Checks if external storage is available for read and write */
     public static boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
