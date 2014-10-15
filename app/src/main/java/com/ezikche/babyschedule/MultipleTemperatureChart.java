@@ -53,26 +53,23 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
     public View execute(Context context) {
         String[] titles = new String[] { "喝奶量" };
 
-        int[] colors = new int[] {Color.BLUE, Color.RED};
+        int[] colors = new int[] {Color.rgb(0x9F,0x9F,0x5F), Color.MAGENTA};
         PointStyle[] styles = new PointStyle[] { PointStyle.POINT, PointStyle.POINT};
-        XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer(2);
-        setRenderer(renderer, colors, styles);
+        XYMultipleSeriesRenderer renderer = buildRenderer(colors, styles);
 
-        setChartSettings(renderer, "统计数据", "天", "ML", 0, 1000, 0, 1000,
-                Color.BLACK, Color.BLACK);
-//        renderer.setXLabels(12);
-//        renderer.setYLabels(10);
+        setChartSettings(renderer, "统计数据", "天", "ML",Color.BLACK, Color.BLACK);
+        renderer.setXLabels(10);
+        renderer.setYLabels(10);
         renderer.setShowGrid(true);
-        renderer.setXLabelsAlign(Align.RIGHT);
+        renderer.setXLabelsAlign(Align.CENTER);
         renderer.setYLabelsAlign(Align.RIGHT);
         renderer.setZoomButtonsVisible(true);
 //        renderer.setPanLimits(new double[] { -10, 20, -10, 40 });
 //        renderer.setZoomLimits(new double[] { -10, null, -10, null });
-        renderer.setZoomRate(1.05f);
-        renderer.setLabelsColor(Color.BLACK);
-        renderer.setXLabelsColor(Color.CYAN);
-        renderer.setYLabelsColor(0, colors[0]);
-        renderer.setYLabelsColor(1, colors[1]);
+        renderer.setZoomRate(2.0f);
+        renderer.setXLabelsColor(Color.GREEN);
+        renderer.setYLabelsColor(0, colors[1]);
+        renderer.setYLabelsColor(1, colors[0]);
 
         renderer.setYTitle("次", 1);
         renderer.setYAxisAlign(Align.RIGHT, 1);

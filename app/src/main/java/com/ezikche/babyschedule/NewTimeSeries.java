@@ -17,7 +17,4 @@ public class NewTimeSeries extends XYSeries {
         super.add(x.getTime(), y);
     }
 
-    protected double getPadding(double x) {
-        return 1;
-    }
 }
