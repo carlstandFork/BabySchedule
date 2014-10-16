@@ -18,7 +18,6 @@ package com.ezikche.babyschedule;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint.Align;
-import android.os.Environment;
 import android.view.View;
 
 import org.achartengine.ChartFactory;
@@ -33,9 +32,6 @@ import java.io.FileReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -51,13 +47,15 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
      * @return the built intent
      */
     public View execute(Context context) {
-        String[] titles = new String[] { "喝奶量" };
-
-        int[] colors = new int[] {Color.rgb(0x9F,0x9F,0x5F), Color.MAGENTA};
-        PointStyle[] styles = new PointStyle[] { PointStyle.POINT, PointStyle.POINT};
+        int[] colors = new int[]{Color.rgb(0x9F, 0x9F, 0x5F), Color.MAGENTA, Color.BLUE};
+        PointStyle[] styles = new PointStyle[colors.length];
+        for(int i =0; i<colors.length ;++i ) {
+            styles[i] = PointStyle.POINT;
+        }
         XYMultipleSeriesRenderer renderer = buildRenderer(colors, styles);
+        String[] actionUnits = context.getResources().getStringArray(R.array.actions_units);
 
-        setChartSettings(renderer, "统计数据", "天", "ML",Color.BLACK, Color.BLACK);
+        setChartSettings(renderer, "统计数据", "天", Color.BLACK, Color.BLACK);
         renderer.setXLabels(10);
         renderer.setYLabels(10);
         renderer.setShowGrid(true);
@@ -68,33 +66,45 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
 //        renderer.setZoomLimits(new double[] { -10, null, -10, null });
         renderer.setZoomRate(2.0f);
         renderer.setXLabelsColor(Color.GREEN);
-        renderer.setYLabelsColor(0, colors[1]);
-        renderer.setYLabelsColor(1, colors[0]);
-
-        renderer.setYTitle("次", 1);
+        for (int i = 0; i < colors.length; ++i) {
+            renderer.setYLabelsColor(i, colors[colors.length - 1 - i]);
+        }
         renderer.setYAxisAlign(Align.RIGHT, 1);
         renderer.setYLabelsAlign(Align.LEFT, 1);
+        renderer.setYAxisAlign(Align.RIGHT, 2);
+        renderer.setYLabelsAlign(Align.RIGHT, 2);
 
         renderer.setMarginsColor(Color.WHITE);
 
         List<Date[]> date = new ArrayList<Date[]>();
-        date.add(getXValues("eat"));
         List<double[]> values = new ArrayList<double[]>();
-        values.add(getYValues("eat"));
-        XYMultipleSeriesDataset dataset = buildDatasetByTime(titles, date, values, 0);
+        String[] actions = context.getResources().getStringArray(R.array.actions);
+        String[] fileNames = context.getResources().getStringArray(R.array.fileName);
 
-        date.clear();
-        date.add(getXValues("poo"));
-        values.clear();
-        values.add(getYValues("poo"));
-        addXYSeriesByTime(dataset, new String[] { "臭臭次数" }, date, values, 1);
+        XYMultipleSeriesDataset dataset = null;
+        for (int i = 0; i < colors.length; ++i){
+            date.add(getXValues(fileNames[i]));
+            if (date.get(0).length < 2) {
+                return null;
+            }
+            values.add(getYValues(fileNames[i]));
+//            renderer.setYTitle(actionUnits[i], i);
+
+            if(dataset==null) {
+                dataset = new XYMultipleSeriesDataset();
+            }
+
+            addXYSeriesByTime(dataset, new String[]{actions[i] + "(" + actionUnits[i] + ")"}, date, values, i);
+            date.clear();
+            values.clear();
+        }
 
         View view = ChartFactory.getTimeChartView(context, dataset, renderer, "yyyy-MM-dd");
         return view;
     }
 
     private Date[] getXValues(String action){
-        List<File> fList = getLatestStorageFile(action);
+        List<File> fList = Utils.getLatestStorageFile(action);
         Date[] dates = new Date[fList.size()];
         for(int i=0; i<fList.size();++i)
         {
@@ -109,7 +119,7 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
     }
 
     private double[] getYValues(String action){
-        List<File> fList = getLatestStorageFile(action);
+        List<File> fList = Utils.getLatestStorageFile(action);
         double[] values = new double[fList.size()];
         for(int i=0; i<fList.size();++i)
         {
@@ -144,26 +154,5 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
         return sum;
     }
 
-    private List<File> getLatestStorageFile(String dir) {
-        File f = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+File.separator+dir);
-        if(f.exists()) {
-            File[] sortedFiles = f.listFiles();
-            if(null != sortedFiles)
-            {
-                List<File> files = Arrays.asList(sortedFiles);
-                Collections.sort(files, new Comparator<File>() {
-                    @Override
-                    public int compare(File o1, File o2) {
-                        if (o1.isDirectory() && o2.isFile())
-                            return -1;
-                        if (o1.isFile() && o2.isDirectory())
-                            return -1;
-                        return o2.getName().compareTo(o1.getName());
-                    }
-                });
-                return files;
-            }
-        }
-        return null;
-    }
+
 }

@@ -30,9 +30,9 @@ import java.util.List;
 public abstract class AbstractDemoChart{
 
     public XYMultipleSeriesDataset buildDatasetByTime(String[] titles, List<Date[]> xValues,
-                                                      List<double[]> yValues, int scale) {
+                                                      List<double[]> yValues) {
         XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
-        addXYSeriesByTime(dataset, titles, xValues, yValues, scale);
+        addXYSeriesByTime(dataset, titles, xValues, yValues, 0);
         return dataset;
     }
 
@@ -76,7 +76,7 @@ public abstract class AbstractDemoChart{
             r.setColor(colors[i]);
             r.setPointStyle(styles[i]);
             r.setLineWidth(3f);
-            renderer.addSeriesRenderer(r);
+            renderer.addSeriesRenderer(i,r);
         }
     }
 
@@ -86,16 +86,13 @@ public abstract class AbstractDemoChart{
      * @param renderer the renderer to set the properties to
      * @param title the chart title
      * @param xTitle the title for the X axis
-     * @param yTitle the title for the Y axis
      * @param axesColor the axes color
      * @param labelsColor the labels color
      */
     protected void setChartSettings(XYMultipleSeriesRenderer renderer, String title, String xTitle,
-                                    String yTitle, int axesColor,
-                                    int labelsColor) {
+                                    int axesColor,int labelsColor) {
         renderer.setChartTitle(title);
         renderer.setXTitle(xTitle);
-        renderer.setYTitle(yTitle);
         renderer.setYAxisMin(0);
         renderer.setAxesColor(axesColor);
         renderer.setLabelsColor(labelsColor);

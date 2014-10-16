@@ -6,6 +6,11 @@
         <item>臭臭</item>
         <item>觉觉</item>
     </string-array>
+    <string-array name="actions_units">
+        <item>毫升</item>
+        <item>次</item>
+        <item>小时</item>
+    </string-array>
     <string-array name="dialogMsg">
         <item>宝宝已经喝了多少毫升奶？</item>
         <item>宝宝已经拉了几次臭臭？</item>

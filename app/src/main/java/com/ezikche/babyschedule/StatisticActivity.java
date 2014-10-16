@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 
 public class StatisticActivity extends Activity {
@@ -13,8 +14,13 @@ public class StatisticActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         View view = new MultipleTemperatureChart().execute(this);
-        setContentView(view);
-        setTitle(getResources().getText(R.string.title_activity_statistic));
+        if (view != null) {
+            setContentView(view);
+            setTitle(getResources().getText(R.string.title_activity_statistic));
+        }
+        else {
+            Toast.makeText(StatisticActivity.this, "数据不足，无法统计", Toast.LENGTH_SHORT).show();
+        }
 
         try {
             getActionBar().setDisplayHomeAsUpEnabled(true);

@@ -3,6 +3,10 @@ package com.ezikche.babyschedule;
 import android.os.Environment;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Created by ezikche on 9/30/2014.
@@ -39,12 +43,12 @@ public class Utils {
         float PICKER_RANGE = 0;
         switch (act) {
             case EAT://eat
-                NUMBER_OF_VALUES = 25;
-                PICKER_RANGE = 20;
+                NUMBER_OF_VALUES = 30;
+                PICKER_RANGE = 10;
                 break;
             case POO://poo
                 NUMBER_OF_VALUES = 10;
-                PICKER_RANGE = 1;
+                PICKER_RANGE = 0.5f;
                 break;
             case SLEEP://sleep
                 NUMBER_OF_VALUES = 20;
@@ -112,6 +116,29 @@ public class Utils {
         } else
             return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + File.separator + dir, fileName);
 
+        return null;
+    }
+
+    public static List<File> getLatestStorageFile(String dir) {
+        File f = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+File.separator+dir);
+        if(f.exists()) {
+            File[] sortedFiles = f.listFiles();
+            if(null != sortedFiles)
+            {
+                List<File> files = Arrays.asList(sortedFiles);
+                Collections.sort(files, new Comparator<File>() {
+                    @Override
+                    public int compare(File o1, File o2) {
+                        if (o1.isDirectory() && o2.isFile())
+                            return -1;
+                        if (o1.isFile() && o2.isDirectory())
+                            return -1;
+                        return o2.getName().compareTo(o1.getName());
+                    }
+                });
+                return files;
+            }
+        }
         return null;
     }
 }
