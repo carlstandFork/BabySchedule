@@ -15,6 +15,9 @@ import android.widget.NumberPicker;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
 import java.io.File;
 import java.io.FileOutputStream;
 
@@ -22,6 +25,7 @@ import java.io.FileOutputStream;
 public class MainActivity extends Activity
         implements ItemFragment.OnFragmentInteractionListener {
 
+    private AdView mAdView;
     private int[] mColorList = new int[]{Color.YELLOW, Color.MAGENTA, Color.CYAN};
     private int[] mBackgroundPics = new int[]{R.drawable.eat, R.drawable.poo, R.drawable.sleep};
     private int mCurrentAct = Utils.EAT;
@@ -31,6 +35,10 @@ public class MainActivity extends Activity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_large);
+
+        mAdView = (AdView) findViewById(R.id.adView);
+//        mAdView.setAdListener(new ToastAdListener(this));
+        mAdView.loadAd(new AdRequest.Builder().build());
 
         ItemFragment itemFragment = (ItemFragment) getFragmentManager().findFragmentById(R.id.left_fragment);
         itemFragment.setSelectedItem(mCurrentAct);

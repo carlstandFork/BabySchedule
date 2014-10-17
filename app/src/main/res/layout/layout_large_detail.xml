@@ -1,20 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/large_layout"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/large_layout_detail"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:baselineAligned="false">
+    android:layout_height="match_parent">
 
-    <fragment android:name="com.ezikche.babyschedule.ItemFragment"
-        android:id="@+id/left_fragment"
-        android:layout_weight="1"
-        android:layout_width="0dp"
-        android:layout_height="match_parent" />
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/inner_linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false">
 
-    <fragment android:name="com.ezikche.babyschedule.rightFragment"
-        android:id="@+id/right_fragment"
-        android:layout_weight="3"
-        android:layout_width="0dp"
-        android:layout_height="match_parent" />
-</LinearLayout>
+        <fragment android:name="com.ezikche.babyschedule.ItemFragment"
+            android:id="@+id/left_fragment"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+
+        <fragment android:name="com.ezikche.babyschedule.rightFragment"
+            android:id="@+id/right_fragment"
+            android:layout_weight="3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        ads:adSize="BANNER"
+        ads:adUnitId="@string/ad_unit_id"/>
+</RelativeLayout>

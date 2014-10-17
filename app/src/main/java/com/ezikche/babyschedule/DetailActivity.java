@@ -22,6 +22,9 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -35,6 +38,7 @@ import java.util.List;
 
 
 public class DetailActivity extends Activity implements ItemFragment.OnFragmentInteractionListener {
+    private AdView mAdView;
     private int[] mBackgroundPics = new int[]{R.drawable.eat, R.drawable.poo,R.drawable.sleep};
     private int[] mColorList = new int[]{Color.YELLOW, Color.MAGENTA, Color.CYAN};
     private int mCurrentAct = Utils.EAT;
@@ -46,6 +50,10 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
         super.onCreate(savedInstanceState);
         mFileNames = getResources().getStringArray(R.array.fileName);
         setContentView(R.layout.layout_large_detail);
+
+        mAdView = (AdView) findViewById(R.id.adView);
+//        mAdView.setAdListener(new ToastAdListener(this));
+        mAdView.loadAd(new AdRequest.Builder().build());
 
         try {
             getActionBar().setDisplayHomeAsUpEnabled(true);

@@ -64,12 +64,12 @@ public abstract class AbstractDemoChart{
     }
 
     protected void setRenderer(XYMultipleSeriesRenderer renderer, int[] colors, PointStyle[] styles) {
-        renderer.setAxisTitleTextSize(16);
+//        renderer.setAxisTitleTextSize(30);
         renderer.setChartTitleTextSize(20);
-        renderer.setLabelsTextSize(15);
-        renderer.setLegendTextSize(15);
+        renderer.setLabelsTextSize(20);
+        renderer.setLegendTextSize(20);
         renderer.setPointSize(5f);
-        renderer.setMargins(new int[]{20, 30, 30, 20});
+        renderer.setMargins(new int[]{30, 30, 30, 30});
         int length = colors.length;
         for (int i = 0; i < length; i++) {
             XYSeriesRenderer r = new XYSeriesRenderer();
@@ -92,7 +92,7 @@ public abstract class AbstractDemoChart{
     protected void setChartSettings(XYMultipleSeriesRenderer renderer, String title, String xTitle,
                                     int axesColor,int labelsColor) {
         renderer.setChartTitle(title);
-        renderer.setXTitle(xTitle);
+//        renderer.setXTitle(xTitle);
         renderer.setYAxisMin(0);
         renderer.setAxesColor(axesColor);
         renderer.setLabelsColor(labelsColor);
