@@ -46,16 +46,16 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
      * @param context the context
      * @return the built intent
      */
-    public View execute(Context context) {
+    public View execute(Context context, int topMargin) {
         int[] colors = new int[]{Color.rgb(0x9F, 0x9F, 0x5F), Color.MAGENTA, Color.BLUE};
         PointStyle[] styles = new PointStyle[colors.length];
         for(int i =0; i<colors.length ;++i ) {
             styles[i] = PointStyle.POINT;
         }
-        XYMultipleSeriesRenderer renderer = buildRenderer(colors, styles);
+        XYMultipleSeriesRenderer renderer = buildRenderer(colors, styles, topMargin);
         String[] actionUnits = context.getResources().getStringArray(R.array.actions_units);
 
-        setChartSettings(renderer, "统计数据", "天", Color.BLACK, Color.BLACK);
+        setChartSettings(renderer, "天", Color.BLACK, Color.BLACK);
         renderer.setXLabels(10);
         renderer.setYLabels(10);
         renderer.setShowGrid(true);
@@ -99,7 +99,7 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
             values.clear();
         }
 
-        View view = ChartFactory.getTimeChartView(context, dataset, renderer, "yyyy-MM-dd");
+        View view = ChartFactory.getTimeChartView(context, dataset, renderer, "MM-dd");
         return view;
     }
 

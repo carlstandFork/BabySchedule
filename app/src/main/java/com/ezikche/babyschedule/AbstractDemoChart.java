@@ -57,19 +57,19 @@ public abstract class AbstractDemoChart{
      * @param styles the series point styles
      * @return the XY multiple series renderers
      */
-    protected XYMultipleSeriesRenderer buildRenderer(int[] colors, PointStyle[] styles) {
+    protected XYMultipleSeriesRenderer buildRenderer(int[] colors, PointStyle[] styles, int topMargin) {
         XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer(colors.length);
-        setRenderer(renderer, colors, styles);
+        setRenderer(renderer, colors, styles, topMargin);
         return renderer;
     }
 
-    protected void setRenderer(XYMultipleSeriesRenderer renderer, int[] colors, PointStyle[] styles) {
+    protected void setRenderer(XYMultipleSeriesRenderer renderer, int[] colors, PointStyle[] styles, int topMargin) {
 //        renderer.setAxisTitleTextSize(30);
-        renderer.setChartTitleTextSize(20);
+//        renderer.setChartTitleTextSize(20);
         renderer.setLabelsTextSize(20);
         renderer.setLegendTextSize(20);
         renderer.setPointSize(5f);
-        renderer.setMargins(new int[]{30, 30, 30, 30});
+        renderer.setMargins(new int[]{topMargin, 30, 30, 30});
         int length = colors.length;
         for (int i = 0; i < length; i++) {
             XYSeriesRenderer r = new XYSeriesRenderer();
@@ -84,14 +84,12 @@ public abstract class AbstractDemoChart{
      * Sets a few of the series renderer settings.
      *
      * @param renderer the renderer to set the properties to
-     * @param title the chart title
      * @param xTitle the title for the X axis
      * @param axesColor the axes color
      * @param labelsColor the labels color
      */
-    protected void setChartSettings(XYMultipleSeriesRenderer renderer, String title, String xTitle,
+    protected void setChartSettings(XYMultipleSeriesRenderer renderer, String xTitle,
                                     int axesColor,int labelsColor) {
-        renderer.setChartTitle(title);
 //        renderer.setXTitle(xTitle);
         renderer.setYAxisMin(0);
         renderer.setAxesColor(axesColor);

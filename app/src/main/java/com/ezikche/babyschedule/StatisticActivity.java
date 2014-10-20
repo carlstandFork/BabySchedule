@@ -5,21 +5,35 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 
 
 public class StatisticActivity extends Activity {
-
+    private AdView mAdView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        View view = new MultipleTemperatureChart().execute(this);
+        View view = new MultipleTemperatureChart().execute(this, AdSize.BANNER.getHeightInPixels(this));
         if (view != null) {
             setContentView(view);
             setTitle(getResources().getText(R.string.title_activity_statistic));
+
+            mAdView = new AdView(this);
+            mAdView.setAdUnitId(getResources().getString(R.string.ad_unit_id));
+            mAdView.setAdSize(AdSize.BANNER);
+//        mAdView.setAdListener(new ToastAdListener(this));
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams( RelativeLayout.LayoutParams.MATCH_PARENT ,  RelativeLayout.LayoutParams.WRAP_CONTENT );
+            params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+            addContentView(mAdView, params);
+            mAdView.loadAd(new AdRequest.Builder().build());
         }
         else {
-            Toast.makeText(StatisticActivity.this, "数据不足，无法统计", Toast.LENGTH_SHORT).show();
+            Toast.makeText(StatisticActivity.this, getResources().getText(R.string.no_enough_data), Toast.LENGTH_SHORT).show();
         }
 
         try {
