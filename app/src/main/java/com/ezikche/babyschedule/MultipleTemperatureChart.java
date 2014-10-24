@@ -53,7 +53,6 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
             styles[i] = PointStyle.POINT;
         }
         XYMultipleSeriesRenderer renderer = buildRenderer(colors, styles, topMargin);
-        String[] actionUnits = context.getResources().getStringArray(R.array.actions_units);
 
         setChartSettings(renderer, "天", Color.BLACK, Color.BLACK);
         renderer.setXLabels(10);
@@ -76,17 +75,29 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
 
         renderer.setMarginsColor(Color.WHITE);
 
-        List<Date[]> date = new ArrayList<Date[]>();
+        XYMultipleSeriesDataset dataset = getDataSet(context,colors);
+        if(dataset==null)
+            return null;
+
+        View view = ChartFactory.getTimeChartView(context, dataset, renderer, "MM-dd");
+        return view;
+    }
+
+    private XYMultipleSeriesDataset getDataSet(Context context, int[] colors){
+        List<Date[]> dates = new ArrayList<Date[]>();
         List<double[]> values = new ArrayList<double[]>();
         String[] actions = context.getResources().getStringArray(R.array.actions);
         String[] fileNames = context.getResources().getStringArray(R.array.fileName);
-
+        String[] actionUnits = context.getResources().getStringArray(R.array.actions_units);
         XYMultipleSeriesDataset dataset = null;
         for (int i = 0; i < colors.length; ++i){
-            date.add(getXValues(fileNames[i]));
-            if (date.get(0).length < 2) {
-                return null;
+            Date[] date = getXValues(fileNames[i]);
+            double[] yValue = getYValues(fileNames[i]);
+            if ((date == null || date!=null && date.length < 2) ||
+                    (yValue==null || yValue!=null && yValue.length < 2)) {
+                continue;
             }
+            dates.add(getXValues(fileNames[i]));
             values.add(getYValues(fileNames[i]));
 //            renderer.setYTitle(actionUnits[i], i);
 
@@ -94,38 +105,42 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
                 dataset = new XYMultipleSeriesDataset();
             }
 
-            addXYSeriesByTime(dataset, new String[]{actions[i] + "(" + actionUnits[i] + ")"}, date, values, i);
-            date.clear();
+            addXYSeriesByTime(dataset, new String[]{actions[i] + "(" + actionUnits[i] + ")"}, dates, values, i);
+            dates.clear();
             values.clear();
         }
-
-        View view = ChartFactory.getTimeChartView(context, dataset, renderer, "MM-dd");
-        return view;
+        return dataset;
     }
 
     private Date[] getXValues(String action){
         List<File> fList = Utils.getLatestStorageFile(action);
-        Date[] dates = new Date[fList.size()];
-        for(int i=0; i<fList.size();++i)
-        {
-            try {
-                Date fDate = new SimpleDateFormat("yyyy.MM.dd").parse(fList.get(i).getName());
-                dates[i] = fDate;
-            } catch (ParseException e) {
-                e.printStackTrace();
+        if(fList!=null && fList.size()>0) {
+            Date[] dates = new Date[fList.size()];
+            for (int i = 0; i < fList.size(); ++i) {
+                try {
+                    Date fDate = new SimpleDateFormat("yyyy.MM.dd").parse(fList.get(i).getName());
+                    dates[i] = fDate;
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
+            return dates;
         }
-        return dates;
+        else
+            return null;
     }
 
     private double[] getYValues(String action){
         List<File> fList = Utils.getLatestStorageFile(action);
-        double[] values = new double[fList.size()];
-        for(int i=0; i<fList.size();++i)
-        {
-            values[i] = getSumValuesFromFile(fList.get(i));
+        if(fList!=null && fList.size()>0) {
+            double[] values = new double[fList.size()];
+            for (int i = 0; i < fList.size(); ++i) {
+                values[i] = getSumValuesFromFile(fList.get(i));
+            }
+            return values;
         }
-        return values;
+        else
+            return null;
     }
 
     private double getSumValuesFromFile(File file){

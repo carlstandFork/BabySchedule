@@ -102,6 +102,9 @@ public class MainActivity extends Activity
         picker.setMinValue(0);
         picker.setMaxValue(displayedValues.length - 1);
         picker.setDisplayedValues(displayedValues);
+        if(mCurrentAct == Utils.EAT){
+            picker.setValue(Utils.EAT_DEFAULT);
+        }
         picker.setWrapSelectorWheel(false);
         picker.setBackgroundColor(mColorList[mCurrentAct]);
         picker.setAlpha(0.5f);

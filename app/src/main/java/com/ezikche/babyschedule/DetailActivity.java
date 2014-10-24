@@ -94,18 +94,22 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
                 }
                 break;
             case R.id.action_prev:
-                ++mCurrentFileIndex;
-                if(mCurrentFileIndex>mSortedFiles.length-1)
-                    mCurrentFileIndex = 0;
-                setTextViewByAct(mCurrentAct);
-                setRightBackgroundByAction(mCurrentAct);
+                if(mSortedFiles!=null && mSortedFiles.length>0){
+                    ++mCurrentFileIndex;
+                    if(mCurrentFileIndex>mSortedFiles.length-1)
+                        mCurrentFileIndex = 0;
+                    setTextViewByAct(mCurrentAct);
+                    setRightBackgroundByAction(mCurrentAct);
+                }
                 break;
             case R.id.action_next:
-                --mCurrentFileIndex;
-                if(mCurrentFileIndex<0)
-                    mCurrentFileIndex = mSortedFiles.length -1;
-                setTextViewByAct(mCurrentAct);
-                setRightBackgroundByAction(mCurrentAct);
+                if(mSortedFiles!=null && mSortedFiles.length>0) {
+                    --mCurrentFileIndex;
+                    if (mCurrentFileIndex < 0)
+                        mCurrentFileIndex = mSortedFiles.length - 1;
+                    setTextViewByAct(mCurrentAct);
+                    setRightBackgroundByAction(mCurrentAct);
+                }
                 break;
             default:
                 break;

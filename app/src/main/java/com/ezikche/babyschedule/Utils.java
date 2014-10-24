@@ -16,6 +16,7 @@ public class Utils {
     public static final int EAT = 0;
     public static final int POO = 1;
     public static final int SLEEP = 2;
+    public static final int EAT_DEFAULT = 9;
 
     public static String getMessageBodyByAct(int act, String[] displayedValues, int valuePos) {
         String body = "";
@@ -59,9 +60,14 @@ public class Utils {
         }
 
         final String[] displayedValues = new String[NUMBER_OF_VALUES];
-        for (int i = 0; i < NUMBER_OF_VALUES; i++)
-            displayedValues[i] = String.valueOf(PICKER_RANGE * (i + 1));
-
+        if(act == EAT || act == POO) {
+            for (int i = 0; i < NUMBER_OF_VALUES; i++)
+                displayedValues[i] = String.valueOf(PICKER_RANGE * (i + 1));
+        }
+        else if(act == SLEEP){
+            for (int i = 0; i < NUMBER_OF_VALUES; i++)
+                displayedValues[i] = String.valueOf(PICKER_RANGE * (i));
+        }
         return displayedValues;
     }
 
