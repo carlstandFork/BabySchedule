@@ -24,6 +24,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.TreeMultimap;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -36,6 +38,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+//import org.apache.commons;
 
 public class DetailActivity extends Activity implements ItemFragment.OnFragmentInteractionListener {
     private AdView mAdView;
@@ -150,14 +153,16 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
             try {
                 BufferedReader buf = new BufferedReader(new FileReader(inFile));
 
-                final ArrayList<String> titles = new ArrayList<String>();
-                final ArrayList<String> bodys = new ArrayList<String>();
                 String tmp;
+                Multimap<String, String> TBs = TreeMultimap.create();
                 while ((tmp = buf.readLine()) != null) {
                     int pos = tmp.indexOf(":");
-                    titles.add(tmp.substring(0, pos) + "\n");
-                    bodys.add(tmp.substring(pos + 1) + "\n");
+                    TBs.put(tmp.substring(0, pos) + "\n", tmp.substring(pos + 1) + "\n");
                 }
+
+                final ArrayList<String> titles = new ArrayList<String>(TBs.keys());
+                final ArrayList<String> bodys = new ArrayList<String>(TBs.values());
+
 
                 ArrayAdapter adapter = new ArrayAdapter(this, R.layout.simple_list_item_small_title, android.R.id.text1, titles) {
                     @Override
