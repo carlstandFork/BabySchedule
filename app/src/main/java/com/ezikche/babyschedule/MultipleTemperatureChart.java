@@ -79,6 +79,10 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
         if(dataset==null)
             return null;
 
+        while(dataset.getSeriesCount()<renderer.getSeriesRendererCount()) {
+            renderer.removeSeriesRenderer(renderer.getSeriesRendererAt(renderer.getSeriesRendererCount()-1));
+        }
+
         View view = ChartFactory.getTimeChartView(context, dataset, renderer, "MM-dd");
         return view;
     }

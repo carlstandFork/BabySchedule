@@ -22,15 +22,15 @@ public class Utils {
         String body = "";
         switch (act) {
             case EAT: {
-                body = "宝宝已经喝了" + displayedValues[valuePos] + "毫升奶\n";
+                body = "宝宝喝了" + displayedValues[valuePos] + "毫升奶\n";
             }
             break;
             case POO: {
-                body = "宝宝已经拉了" + displayedValues[valuePos] + "次臭臭\n";
+                body = "宝宝拉了" + displayedValues[valuePos] + "次臭臭\n";
             }
             break;
             case SLEEP: {
-                body = "宝宝已经睡了" + displayedValues[valuePos] + "小时觉觉\n";
+                body = "宝宝睡了" + displayedValues[valuePos] + "小时觉觉\n";
             }
             break;
             default:
