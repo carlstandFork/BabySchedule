@@ -39,14 +39,16 @@ import java.util.List;
  * Multiple temperature demo chart.
  */
 public class MultipleTemperatureChart extends AbstractDemoChart {
-
+    Context mContext;
+    public MultipleTemperatureChart(Context context){
+        mContext = context;
+    }
     /**
      * Executes the chart demo.
      *
-     * @param context the context
      * @return the built intent
      */
-    public View execute(Context context, int topMargin) {
+    public View execute(int topMargin) {
         int[] colors = new int[]{Color.rgb(0x9F, 0x9F, 0x5F), Color.MAGENTA, Color.BLUE};
         PointStyle[] styles = new PointStyle[colors.length];
         for(int i =0; i<colors.length ;++i ) {
@@ -54,7 +56,7 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
         }
         XYMultipleSeriesRenderer renderer = buildRenderer(colors, styles, topMargin);
 
-        setChartSettings(renderer, "天", Color.BLACK, Color.BLACK);
+        setChartSettings(renderer, mContext.getResources().getString(R.string.day), Color.BLACK, Color.BLACK);
         renderer.setXLabels(10);
         renderer.setYLabels(10);
         renderer.setShowGrid(true);
@@ -75,7 +77,7 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
 
         renderer.setMarginsColor(Color.WHITE);
 
-        XYMultipleSeriesDataset dataset = getDataSet(context,colors);
+        XYMultipleSeriesDataset dataset = getDataSet(mContext,colors);
         if(dataset==null)
             return null;
 
@@ -83,7 +85,7 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
             renderer.removeSeriesRenderer(renderer.getSeriesRendererAt(renderer.getSeriesRendererCount()-1));
         }
 
-        View view = ChartFactory.getTimeChartView(context, dataset, renderer, "MM-dd");
+        View view = ChartFactory.getTimeChartView(mContext, dataset, renderer, mContext.getResources().getString(R.string.monthAndDay));
         return view;
     }
 
@@ -122,7 +124,7 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
             Date[] dates = new Date[fList.size()];
             for (int i = 0; i < fList.size(); ++i) {
                 try {
-                    Date fDate = new SimpleDateFormat("yyyy.MM.dd").parse(fList.get(i).getName());
+                    Date fDate = new SimpleDateFormat(mContext.getResources().getString(R.string.yearMonthDay)).parse(fList.get(i).getName());
                     dates[i] = fDate;
                 } catch (ParseException e) {
                     e.printStackTrace();

@@ -18,7 +18,7 @@ public class StatisticActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        View view = new MultipleTemperatureChart().execute(this, AdSize.BANNER.getHeightInPixels(this));
+        View view = new MultipleTemperatureChart(this).execute(AdSize.BANNER.getHeightInPixels(this));
         if (view != null) {
             setContentView(view);
             setTitle(getResources().getText(R.string.title_activity_statistic));
