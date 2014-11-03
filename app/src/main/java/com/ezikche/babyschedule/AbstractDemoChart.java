@@ -44,9 +44,23 @@ public abstract class AbstractDemoChart{
             Date[] xV = xValues.get(i);
             double[] yV = yValues.get(i);
             int seriesLength = xV.length;
+            double lowestY = yV[0];
+            double highestY = yV[0];
+            Date highestX = xV[0];
+            Date lowestX = xV[0];
             for (int k = 0; k < seriesLength; k++) {
                 series.add(xV[k], yV[k]);
+                if(yV[k] >= highestY) {
+                    highestY = yV[k];
+                    highestX = xV[k];
+                }
+                if(yV[k] < lowestY){
+                    lowestY = yV[k];
+                    lowestX = xV[k];
+                }
             }
+            series.addAnnotation(String.valueOf(lowestY),lowestX,lowestY);
+            series.addAnnotation(String.valueOf(highestY),highestX,highestY);
             dataset.addSeries(i,series);
         }
     }
@@ -66,16 +80,18 @@ public abstract class AbstractDemoChart{
     protected void setRenderer(XYMultipleSeriesRenderer renderer, int[] colors, PointStyle[] styles, int topMargin) {
 //        renderer.setAxisTitleTextSize(30);
 //        renderer.setChartTitleTextSize(20);
-        renderer.setLabelsTextSize(20);
-        renderer.setLegendTextSize(20);
+        renderer.setLabelsTextSize(30);
+        renderer.setLegendTextSize(30);
         renderer.setPointSize(5f);
-        renderer.setMargins(new int[]{topMargin, 30, 30, 30});
+        renderer.setMargins(new int[]{topMargin, 80, 50, 60});
         int length = colors.length;
         for (int i = 0; i < length; i++) {
             XYSeriesRenderer r = new XYSeriesRenderer();
             r.setColor(colors[i]);
             r.setPointStyle(styles[i]);
             r.setLineWidth(3f);
+            r.setAnnotationsTextSize(30);
+            r.setAnnotationsColor(colors[i]);
             renderer.addSeriesRenderer(i,r);
         }
     }

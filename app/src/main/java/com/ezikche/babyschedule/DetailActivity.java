@@ -162,6 +162,9 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
 
                 final ArrayList<String> titles = new ArrayList<String>(TBs.keys());
                 final ArrayList<String> bodys = new ArrayList<String>(TBs.values());
+                // avoid to be covered with ads
+                titles.add("");
+                bodys.add("");
 
 
                 ArrayAdapter adapter = new ArrayAdapter(this, R.layout.simple_list_item_small_title, android.R.id.text1, titles) {
@@ -283,9 +286,14 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
                 FileOutputStream fos = new FileOutputStream(outFile, false);
 
                 for (int i = 0; i < titles.size(); ++i) {
-                    String title = titles.get(i);
-                    String message = title.substring(0, title.length() - 1) + ":" + bodys.get(i);
-                    fos.write(message.getBytes());
+                    try{
+                        String title = titles.get(i);
+                        String message = title.substring(0, title.length() - 1) + ":" + bodys.get(i);
+                        fos.write(message.getBytes());
+                    }
+                    catch(Exception e){
+                        e.printStackTrace();
+                    }
                 }
                 fos.close();
 

@@ -16,5 +16,8 @@ public class NewTimeSeries extends XYSeries {
     public synchronized void add(Date x, double y) {
         super.add(x.getTime(), y);
     }
+    public synchronized void addAnnotation(String annotation, Date x, double y) {
+        super.addAnnotation(annotation, x.getTime(), y);
+    }
 
 }
