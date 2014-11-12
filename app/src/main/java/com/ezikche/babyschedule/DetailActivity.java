@@ -280,6 +280,20 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
     private boolean writeFile(ArrayList<String> titles, ArrayList<String> bodys) {
         if (Utils.isExternalStorageWritable()) {
             File outFile = getLatestStorageFile(mFileNames[mCurrentAct]);
+            if(titles.size() == 1 && bodys.size() == 1) {
+                try {
+                    outFile.delete();
+                    if(mSortedFiles!=null && mSortedFiles.length>0){
+                        ++mCurrentFileIndex;
+                        if(mCurrentFileIndex>mSortedFiles.length-1)
+                            mCurrentFileIndex = 0;
+                        setTextViewByAct(mCurrentAct);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return true;
+            }
             try {
                 FileOutputStream fos = new FileOutputStream(outFile, false);
 
