@@ -39,5 +39,7 @@
     <string name="title_activity_detail">明细</string>
     <string name="title_activity_statistic">统计</string>
     <string name="no_enough_data">数据不足，无法统计，明天再来试试：）</string>
+    <string name="pref_exit">退出程序</string>
+    <string name="pref_exit_summ">按两次返回键退出</string>
     <string name="ad_unit_id">ca-app-pub-5512781845194915/2384316316</string>
 </resources>

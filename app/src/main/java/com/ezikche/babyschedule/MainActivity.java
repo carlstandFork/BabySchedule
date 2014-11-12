@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -26,7 +25,6 @@ public class MainActivity extends Activity
         implements ItemFragment.OnFragmentInteractionListener {
 
     private AdView mAdView;
-    private int[] mColorList = new int[]{Color.YELLOW, Color.MAGENTA, Color.CYAN};
     private int[] mBackgroundPics = new int[]{R.drawable.eat, R.drawable.poo, R.drawable.sleep};
     private int mCurrentAct = Utils.EAT;
     private long exitTime = 0;
@@ -61,9 +59,12 @@ public class MainActivity extends Activity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         switch (id) {
-            case R.id.action_settings:
-                Toast.makeText(this, "设定功能还没做好 :P", Toast.LENGTH_SHORT).show();
-                return true;
+            case R.id.action_settings: {
+                Intent intent = new Intent();
+                intent.setClass(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
+            }
+            return true;
             case R.id.action_statistic:
                 if (Utils.isExternalStorageReadable()) {
 //                    Toast.makeText(this, "统计功能仍在拼命(>_<)开发中", Toast.LENGTH_SHORT).show();
@@ -75,10 +76,14 @@ public class MainActivity extends Activity
                 }
                 return true;
             case R.id.action_detail:
+                if (Utils.isExternalStorageReadable()) {
 //                Toast.makeText(this, "明细即将打开:)", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent();
-                intent.setClass(MainActivity.this, DetailActivity.class);
-                startActivity(intent);
+                    Intent intent = new Intent();
+                    intent.setClass(MainActivity.this, DetailActivity.class);
+                    startActivity(intent);
+                } else{
+                    Toast.makeText(this, "文件系统不可读", Toast.LENGTH_SHORT).show();
+                }
                 return true;
             default:
                 break;
@@ -106,7 +111,7 @@ public class MainActivity extends Activity
             picker.setValue(Utils.EAT_DEFAULT);
         }
         picker.setWrapSelectorWheel(false);
-        picker.setBackgroundColor(mColorList[mCurrentAct]);
+        picker.setBackgroundColor(Utils.colors[mCurrentAct]);
         picker.setAlpha(0.5f);
         picker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
         builder.setView(picker);
@@ -174,8 +179,8 @@ public class MainActivity extends Activity
 
     @Override
     public void onFragmentInteraction(String id, int position, View view) {
-        mCurrentAct = position % mColorList.length;
-        view.setBackgroundColor(mColorList[mCurrentAct]);
+        mCurrentAct = position % Utils.colors.length;
+        view.setBackgroundColor(Utils.colors[mCurrentAct]);
 
         setRightBackgroundByAction(mCurrentAct);
 

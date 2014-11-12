@@ -15,11 +15,14 @@
  */
 package com.ezikche.babyschedule;
 
+import android.graphics.Paint;
+
 import org.achartengine.chart.PointStyle;
 import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -59,8 +62,20 @@ public abstract class AbstractDemoChart{
                     lowestX = xV[k];
                 }
             }
-            series.addAnnotation(String.valueOf(lowestY),lowestX,lowestY);
-            series.addAnnotation(String.valueOf(highestY),highestX,highestY);
+            String lowestYStr;
+            if(lowestY % 1.0f != 0){
+                lowestYStr=new DecimalFormat("0.0").format(lowestY);
+            }else{
+                lowestYStr=new DecimalFormat("0").format(lowestY);
+            }
+            String highestYStr;
+            if(highestY % 1.0f != 0) {
+                highestYStr = new DecimalFormat("0.0").format(highestY);
+            }else{
+                highestYStr=new DecimalFormat("0").format(highestY);
+            }
+            series.addAnnotation(lowestYStr,lowestX,lowestY);
+            series.addAnnotation(highestYStr,highestX,highestY);
             dataset.addSeries(i,series);
         }
     }
@@ -91,6 +106,7 @@ public abstract class AbstractDemoChart{
             r.setPointStyle(styles[i]);
             r.setLineWidth(3f);
             r.setAnnotationsTextSize(30);
+            r.setAnnotationsTextAlign(Paint.Align.RIGHT);
             r.setAnnotationsColor(colors[i]);
             renderer.addSeriesRenderer(i,r);
         }

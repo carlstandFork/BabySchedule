@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.app.TaskStackBuilder;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.NavUtils;
@@ -43,7 +42,6 @@ import java.util.List;
 public class DetailActivity extends Activity implements ItemFragment.OnFragmentInteractionListener {
     private AdView mAdView;
     private int[] mBackgroundPics = new int[]{R.drawable.eat, R.drawable.poo,R.drawable.sleep};
-    private int[] mColorList = new int[]{Color.YELLOW, Color.MAGENTA, Color.CYAN};
     private int mCurrentAct = Utils.EAT;
     private File[] mSortedFiles = null;
     private int mCurrentFileIndex = 0;
@@ -123,7 +121,7 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
     @Override
     public void onFragmentInteraction(String id, int position, View view)
     {
-        int pos = position % mColorList.length;
+        int pos = position % Utils.colors.length;
         if(mCurrentAct != pos) {
             mCurrentFileIndex = 0;
             mCurrentAct = pos;
@@ -239,7 +237,7 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
         final NumberPicker nPicker = (NumberPicker) layout.findViewById(R.id.numberPicker);
         tPicker.setCurrentHour(hour);
         tPicker.setCurrentMinute(min);
-        tPicker.setBackgroundColor(mColorList[mCurrentAct]);
+        tPicker.setBackgroundColor(Utils.colors[mCurrentAct]);
         tPicker.setAlpha(0.5f);
 
         nPicker.setMinValue(0);
@@ -247,7 +245,7 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
         nPicker.setDisplayedValues(displayedValues);
         nPicker.setValue(valuePos);
         nPicker.setWrapSelectorWheel(false);
-        nPicker.setBackgroundColor(mColorList[mCurrentAct]);
+        nPicker.setBackgroundColor(Utils.colors[mCurrentAct]);
         nPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
         nPicker.setAlpha(0.5f);
 

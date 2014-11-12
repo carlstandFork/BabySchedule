@@ -2,7 +2,6 @@ package com.ezikche.babyschedule;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,7 +35,6 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
-    private int[] colors = { Color.YELLOW, Color.MAGENTA,Color.CYAN };
     /**
      * The fragment's ListView/GridView.
      */

@@ -1,5 +1,6 @@
 package com.ezikche.babyschedule;
 
+import android.graphics.Color;
 import android.os.Environment;
 
 import java.io.File;
@@ -17,6 +18,8 @@ public class Utils {
     public static final int POO = 1;
     public static final int SLEEP = 2;
     public static final int EAT_DEFAULT = 9;
+
+    public static final int[] colors = { Color.YELLOW, Color.MAGENTA,Color.CYAN };
 
     public static String getMessageBodyByAct(int act, String[] displayedValues, int valuePos) {
         String body = "";

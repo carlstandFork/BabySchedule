@@ -67,9 +67,7 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
 //        renderer.setZoomLimits(new double[] { -10, null, -10, null });
         renderer.setZoomRate(2.0f);
         renderer.setXLabelsColor(Color.GREEN);
-        for (int i = 0; i < colors.length; ++i) {
-            renderer.setYLabelsColor(i, colors[colors.length - 1 - i]);
-        }
+
         renderer.setYAxisAlign(Align.RIGHT, 1);
         renderer.setYLabelsAlign(Align.LEFT, 1);
         renderer.setYAxisAlign(Align.RIGHT, 2);
@@ -84,7 +82,9 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
         while(dataset.getSeriesCount()<renderer.getSeriesRendererCount()) {
             renderer.removeSeriesRenderer(renderer.getSeriesRendererAt(renderer.getSeriesRendererCount()-1));
         }
-
+        for (int i = 0; i < renderer.getSeriesRendererCount(); ++i) {
+            renderer.setYLabelsColor(i, colors[renderer.getSeriesRendererCount() - 1 - i]);
+        }
         View view = ChartFactory.getTimeChartView(mContext, dataset, renderer, mContext.getResources().getString(R.string.monthAndDay));
         return view;
     }
@@ -96,6 +96,7 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
         String[] fileNames = context.getResources().getStringArray(R.array.fileName);
         String[] actionUnits = context.getResources().getStringArray(R.array.actions_units);
         XYMultipleSeriesDataset dataset = null;
+        int SeriesNr = 0;
         for (int i = 0; i < colors.length; ++i){
             Date[] date = getXValues(fileNames[i]);
             double[] yValue = getYValues(fileNames[i]);
@@ -111,7 +112,7 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
                 dataset = new XYMultipleSeriesDataset();
             }
 
-            addXYSeriesByTime(dataset, new String[]{actions[i] + "(" + actionUnits[i] + ")"}, dates, values, i);
+            addXYSeriesByTime(dataset, new String[]{actions[i] + "(" + actionUnits[i] + ")"}, dates, values, SeriesNr++);
             dates.clear();
             values.clear();
         }

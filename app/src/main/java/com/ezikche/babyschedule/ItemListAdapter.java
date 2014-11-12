@@ -12,7 +12,6 @@ import java.util.List;
  * Created by ezikche on 9/22/2014.
  */
 public class ItemListAdapter<T> extends ArrayAdapter<T> {
-    private int[] colors = { Color.YELLOW, Color.MAGENTA,Color.CYAN };
     private int mPos = 0;
 
     public ItemListAdapter(Context context, int resource, List<T> objects) {
@@ -30,7 +29,7 @@ public class ItemListAdapter<T> extends ArrayAdapter<T> {
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = super.getView(position, convertView, parent);
         if(mPos == position){
-            view.setBackgroundColor(colors[position % 3]);
+            view.setBackgroundColor(Utils.colors[position % 3]);
         }
         else
             view.setBackgroundColor(Color.TRANSPARENT);
