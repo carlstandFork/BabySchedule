@@ -75,7 +75,7 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
 
         renderer.setMarginsColor(Color.WHITE);
 
-        XYMultipleSeriesDataset dataset = getDataSet(mContext,colors);
+        XYMultipleSeriesDataset dataset = getDataSet(mContext,colors.length);
         if(dataset==null)
             return null;
 
@@ -89,7 +89,7 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
         return view;
     }
 
-    private XYMultipleSeriesDataset getDataSet(Context context, int[] colors){
+    private XYMultipleSeriesDataset getDataSet(Context context, int colorsLength){
         List<Date[]> dates = new ArrayList<Date[]>();
         List<double[]> values = new ArrayList<double[]>();
         String[] actions = context.getResources().getStringArray(R.array.actions);
@@ -97,7 +97,7 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
         String[] actionUnits = context.getResources().getStringArray(R.array.actions_units);
         XYMultipleSeriesDataset dataset = null;
         int SeriesNr = 0;
-        for (int i = 0; i < colors.length; ++i){
+        for (int i = 0; i < colorsLength; ++i){
             Date[] date = getXValues(fileNames[i]);
             double[] yValue = getYValues(fileNames[i]);
             if ((date == null || date!=null && date.length < 2) ||
