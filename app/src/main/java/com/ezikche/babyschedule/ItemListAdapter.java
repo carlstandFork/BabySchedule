@@ -29,7 +29,7 @@ public class ItemListAdapter<T> extends ArrayAdapter<T> {
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = super.getView(position, convertView, parent);
         if(mPos == position){
-            view.setBackgroundColor(Utils.colors[position % 3]);
+            view.setBackgroundColor(Utils.colors[position % Utils.colors.length]);
         }
         else
             view.setBackgroundColor(Color.TRANSPARENT);

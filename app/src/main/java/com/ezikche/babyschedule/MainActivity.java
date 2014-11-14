@@ -27,7 +27,6 @@ public class MainActivity extends Activity
         implements ItemFragment.OnFragmentInteractionListener {
 
     private AdView mAdView;
-    private int[] mBackgroundPics = new int[]{R.drawable.eat, R.drawable.poo, R.drawable.sleep};
     private int mCurrentAct = Utils.EAT;
     private long exitTime = 0;
 
@@ -109,8 +108,19 @@ public class MainActivity extends Activity
         picker.setMinValue(0);
         picker.setMaxValue(displayedValues.length - 1);
         picker.setDisplayedValues(displayedValues);
-        if(mCurrentAct == Utils.EAT){
-            picker.setValue(Utils.EAT_DEFAULT);
+        switch(mCurrentAct){
+            case Utils.EAT:{
+                picker.setValue(Utils.EAT_DEFAULT);
+            }break;
+            case Utils.WEIGHT:{
+                picker.setValue(Utils.WEIGHT_DEFAULT);
+            }break;
+            case Utils.HEIGHT:{
+                picker.setValue(Utils.HEIGHT_DEFAULT);
+            }break;
+            case Utils.TEMPERATURE:{
+                picker.setValue(Utils.TEMPERATURE_DEFAULT);
+            }break;
         }
         picker.setWrapSelectorWheel(false);
         picker.setBackgroundColor(Utils.colors[mCurrentAct]);
@@ -197,7 +207,7 @@ public class MainActivity extends Activity
     private void setRightBackgroundByAction(int action) {
         View rightView = getFragmentManager().findFragmentById(R.id.right_fragment).getView();
         if (rightView != null) {
-            rightView.setBackgroundResource(mBackgroundPics[action]);
+            rightView.setBackgroundResource(Utils.mBackgroundPics[action % Utils.mBackgroundPics.length]);
             rightView.getBackground().setAlpha(0x20);
         }
     }

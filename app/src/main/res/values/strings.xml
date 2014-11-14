@@ -5,21 +5,33 @@
         <item>喝奶</item>
         <item>臭臭</item>
         <item>觉觉</item>
+        <item>体重</item>
+        <item>身长</item>
+        <item>体温</item>
     </string-array>
     <string-array name="actions_units">
         <item>毫升</item>
         <item>次</item>
         <item>小时</item>
+        <item>公斤</item>
+        <item>CM</item>
+        <item>摄氏度</item>
     </string-array>
     <string-array name="dialogMsg">
         <item>宝宝喝了多少毫升奶？</item>
         <item>宝宝拉了几次臭臭？</item>
         <item>宝宝睡了几小时觉觉？</item>
+        <item>宝宝现在多重了？</item>
+        <item>宝宝现在多高了？</item>
+        <item>宝宝现在体温几度？</item>
     </string-array>
     <string-array name="fileName">
         <item>eat</item>
         <item>poo</item>
         <item>sleep</item>
+        <item>weight</item>
+        <item>height</item>
+        <item>temperature</item>
     </string-array>
 
     <string name="app_name">宝宝日志</string>

@@ -41,7 +41,6 @@ import java.util.List;
 
 public class DetailActivity extends Activity implements ItemFragment.OnFragmentInteractionListener {
     private AdView mAdView;
-    private int[] mBackgroundPics = new int[]{R.drawable.eat, R.drawable.poo,R.drawable.sleep};
     private int mCurrentAct = Utils.EAT;
     private File[] mSortedFiles = null;
     private int mCurrentFileIndex = 0;
@@ -133,7 +132,7 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
     private void setRightBackgroundByAction(int action){
         View rightView = getFragmentManager().findFragmentById(R.id.right_fragment).getView();
         if (rightView != null) {
-            rightView.setBackgroundResource(mBackgroundPics[action]);
+            rightView.setBackgroundResource(Utils.mBackgroundPics[action % Utils.mBackgroundPics.length]);
             rightView.getBackground().setAlpha(0x20);
         }
     }
