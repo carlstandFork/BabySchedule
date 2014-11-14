@@ -151,15 +151,16 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
             try {
                 BufferedReader buf = new BufferedReader(new FileReader(inFile));
 
+                final ArrayList<String> titles = new ArrayList<String>();
+                final ArrayList<String> bodys = new ArrayList<String>();
                 String tmp;
                 Multimap<String, String> TBs = TreeMultimap.create();
                 while ((tmp = buf.readLine()) != null) {
                     int pos = tmp.indexOf(":");
-                    TBs.put(tmp.substring(0, pos) + "\n", tmp.substring(pos + 1) + "\n");
+                    titles.add(tmp.substring(0, pos) + "\n");
+                    bodys.add(tmp.substring(pos + 1) + "\n");
                 }
 
-                final ArrayList<String> titles = new ArrayList<String>(TBs.keys());
-                final ArrayList<String> bodys = new ArrayList<String>(TBs.values());
                 // avoid to be covered with ads
                 titles.add("");
                 bodys.add("");
