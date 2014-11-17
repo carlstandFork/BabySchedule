@@ -30,7 +30,7 @@ import java.util.List;
  * An abstract class for the demo charts to extend. It contains some methods for
  * building datasets and renderers.
  */
-public abstract class AbstractDemoChart{
+public abstract class AbstractChart {
 
     public XYMultipleSeriesDataset buildDatasetByTime(String[] titles, List<Date[]> xValues,
                                                       List<double[]> yValues) {
@@ -79,13 +79,7 @@ public abstract class AbstractDemoChart{
             dataset.addSeries(i,series);
         }
     }
-    /**
-     * Builds an XY multiple series renderer.
-     *
-     * @param colors the series rendering colors
-     * @param styles the series point styles
-     * @return the XY multiple series renderers
-     */
+
     protected XYMultipleSeriesRenderer buildRenderer(int[] colors, PointStyle[] styles, int topMargin) {
         XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer(colors.length);
         setRenderer(renderer, colors, styles, topMargin);
@@ -112,14 +106,6 @@ public abstract class AbstractDemoChart{
         }
     }
 
-    /**
-     * Sets a few of the series renderer settings.
-     *
-     * @param renderer the renderer to set the properties to
-     * @param xTitle the title for the X axis
-     * @param axesColor the axes color
-     * @param labelsColor the labels color
-     */
     protected void setChartSettings(XYMultipleSeriesRenderer renderer, String xTitle,
                                     int axesColor,int labelsColor) {
 //        renderer.setXTitle(xTitle);

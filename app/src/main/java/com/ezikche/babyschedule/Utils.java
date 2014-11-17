@@ -29,7 +29,7 @@ public class Utils {
 
 
 
-    public static final int[] colors = { Color.YELLOW, Color.MAGENTA,Color.CYAN,Color.RED, Color.DKGRAY, Color.GREEN };
+    public static final int[] colors = { Color.YELLOW, Color.MAGENTA,Color.CYAN,Color.RED, Color.GREEN };
     public static final int[] mBackgroundPics = new int[]{R.drawable.eat, R.drawable.poo,R.drawable.sleep};
     public static String getMessageBodyByAct(int act, String[] displayedValues, int valuePos) {
         String body = "";

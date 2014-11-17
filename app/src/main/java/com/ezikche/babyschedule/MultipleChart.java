@@ -38,9 +38,9 @@ import java.util.List;
 /**
  * Multiple temperature demo chart.
  */
-public class MultipleTemperatureChart extends AbstractDemoChart {
+public class MultipleChart extends AbstractChart {
     Context mContext;
-    public MultipleTemperatureChart(Context context){
+    public MultipleChart(Context context){
         mContext = context;
     }
     /**
@@ -49,7 +49,7 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
      * @return the built intent
      */
     public View execute(int topMargin) {
-        int[] colors = new int[]{Color.rgb(0x9F, 0x9F, 0x5F), Color.MAGENTA, Color.BLUE};
+        int[] colors = new int[]{Color.rgb(0x9F, 0x9F, 0x5F), Color.MAGENTA, Color.BLUE, Color.RED, Color.DKGRAY};
         PointStyle[] styles = new PointStyle[colors.length];
         for(int i =0; i<colors.length ;++i ) {
             styles[i] = PointStyle.POINT;
@@ -72,6 +72,11 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
         renderer.setYLabelsAlign(Align.LEFT, 1);
         renderer.setYAxisAlign(Align.RIGHT, 2);
         renderer.setYLabelsAlign(Align.RIGHT, 2);
+        renderer.setYAxisAlign(Align.LEFT, 3);
+        renderer.setYLabelsAlign(Align.LEFT, 3);
+        renderer.setYAxisAlign(Align.RIGHT, 4);
+        renderer.setYLabelsAlign(Align.CENTER, 4);
+
 
         renderer.setMarginsColor(Color.WHITE);
 
@@ -93,19 +98,19 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
         List<Date[]> dates = new ArrayList<Date[]>();
         List<double[]> values = new ArrayList<double[]>();
         String[] actions = context.getResources().getStringArray(R.array.actions);
-        String[] fileNames = context.getResources().getStringArray(R.array.fileName);
+        String[] folderNames = context.getResources().getStringArray(R.array.fileName);
         String[] actionUnits = context.getResources().getStringArray(R.array.actions_units);
         XYMultipleSeriesDataset dataset = null;
         int SeriesNr = 0;
         for (int i = 0; i < colorsLength; ++i){
-            Date[] date = getXValues(fileNames[i]);
-            double[] yValue = getYValues(fileNames[i]);
+            Date[] date = getXValues(folderNames[i]);
+            double[] yValue = getYValues(folderNames[i]);
             if ((date == null || date!=null && date.length < 2) ||
                     (yValue==null || yValue!=null && yValue.length < 2)) {
                 continue;
             }
-            dates.add(getXValues(fileNames[i]));
-            values.add(getYValues(fileNames[i]));
+            dates.add(getXValues(folderNames[i]));
+            values.add(getYValues(folderNames[i]));
 //            renderer.setYTitle(actionUnits[i], i);
 
             if(dataset==null) {
@@ -142,7 +147,12 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
         if(fList!=null && fList.size()>0) {
             double[] values = new double[fList.size()];
             for (int i = 0; i < fList.size(); ++i) {
-                values[i] = getSumValuesFromFile(fList.get(i));
+                if(action.compareTo("weight")==0 || action.compareTo("height")==0){
+                    values[i] = getAverageValuesFromFile(fList.get(i));
+                }
+                else{
+                    values[i] = getSumValuesFromFile(fList.get(i));
+                }
             }
             return values;
         }
@@ -173,8 +183,35 @@ public class MultipleTemperatureChart extends AbstractDemoChart {
         catch(Exception e) {
             e.printStackTrace();
         }
+
         return sum;
     }
 
+    private double getAverageValuesFromFile(File file){
+        BufferedReader buf = null;
+        try {
+            buf = new BufferedReader(new FileReader(file));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        double sum = 0;
+        final ArrayList<String> bodys = new ArrayList<String>();
+        String tmp;
+        int arraySize = 0;
+        try {
+            while ((tmp = buf.readLine()) != null) {
+                int pos = tmp.indexOf(":");
+                bodys.add(tmp.substring(pos + 1));
+            }
+
+            for(String line : bodys){
+                sum = sum + Utils.getDigValue(line);
+            }
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+        return sum/bodys.size();
+    }
 
 }
