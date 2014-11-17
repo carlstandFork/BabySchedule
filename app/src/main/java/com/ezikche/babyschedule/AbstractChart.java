@@ -74,8 +74,9 @@ public abstract class AbstractChart {
             }else{
                 highestYStr=new DecimalFormat("0").format(highestY);
             }
-            series.addAnnotation(lowestYStr,lowestX,lowestY);
-            series.addAnnotation(highestYStr,highestX,highestY);
+            float shift = (float) (0.01f*scale*(highestY-lowestY));
+            series.addAnnotation(lowestYStr,lowestX,lowestY-shift);
+            series.addAnnotation(highestYStr,highestX,highestY+shift);
             dataset.addSeries(i,series);
         }
     }
