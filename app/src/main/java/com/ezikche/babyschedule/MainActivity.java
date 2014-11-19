@@ -19,8 +19,10 @@ import android.widget.Toast;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 
 
 public class MainActivity extends Activity
@@ -134,6 +136,23 @@ public class MainActivity extends Activity
                 TimePicker TP = (TimePicker) (MainActivity.this.findViewById(R.id.timePicker));
                 String date = DP.getYear() + "." + String.format("%02d", DP.getMonth() + 1) + "." + String.format("%02d", DP.getDayOfMonth());
                 String time = String.format("%02d", TP.getCurrentHour()) + "." + String.format("%02d", TP.getCurrentMinute());
+                String[] fileNames = getResources().getStringArray(R.array.fileName);
+                try{
+                    BufferedReader buf = new BufferedReader(new FileReader(Utils.getStorageFile(fileNames[mCurrentAct], date)));
+                    String tmp;
+                    while ((tmp = buf.readLine()) != null) {
+                        int pos = tmp.indexOf(":");
+                        if(tmp.substring(0, pos).indexOf(time) != -1)
+                        {
+                            Toast.makeText(MainActivity.this, "时间重复", Toast.LENGTH_SHORT).show();
+                            return ;
+                        }
+                    }
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                }
 
                 String body = Utils.getMessageBodyByAct(mCurrentAct, displayedValues, picker.getValue());
 
@@ -142,7 +161,6 @@ public class MainActivity extends Activity
                 Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
 //              save to the file
                 if (Utils.isExternalStorageWritable()) {
-                    String[] fileNames = getResources().getStringArray(R.array.fileName);
                     File outFile = Utils.getStorageFile(fileNames[mCurrentAct], date);
                     try {
                         FileOutputStream fos = new FileOutputStream(outFile, true);
