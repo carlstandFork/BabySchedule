@@ -2,12 +2,13 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <CheckBoxPreference
-        android:key="@string/pref_key_exitWith2Back"
-        android:title="@string/pref_exit"
-        android:summary="@string/pref_exit_summ"
+        android:key="@string/pref_key_exit"
+        android:title="@string/pref_title_exit"
+        android:summary="@string/pref_summary_exit"
         android:defaultValue="true" />
     <Preference
-        android:key="@string/pref_key_storePath"
+        android:key="@string/pref_key_store_path"
         android:title="@string/pref_title_store_path"
+        android:summary="@string/pref_default_store_path"
         android:defaultValue="@string/pref_default_store_path"/>
 </PreferenceScreen>

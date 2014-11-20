@@ -193,9 +193,9 @@ public class MainActivity extends Activity
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean exitWith2Backs = sharedPref.getBoolean(getString(R.string.pref_key_storePath), true);
+        boolean exitWith2Backs = sharedPref.getBoolean(getString(R.string.pref_key_exit), true);
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN && exitWith2Backs) {
-
+//            press back twice with in 2 secs
             if ((System.currentTimeMillis() - exitTime) > 2000) {
                 Toast.makeText(getApplicationContext(), R.string.press_again_exit, Toast.LENGTH_SHORT).show();
                 exitTime = System.currentTimeMillis();

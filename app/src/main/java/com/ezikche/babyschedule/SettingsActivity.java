@@ -4,13 +4,13 @@ import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import net.rdrei.android.dirchooser.DirectoryChooserFragment;
 
@@ -33,18 +33,28 @@ public class SettingsActivity extends PreferenceActivity implements DirectoryCho
      * shown on tablets.
      */
     private DirectoryChooserFragment mDialog;
+    private String oldPath;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
         addPreferencesFromResource(R.xml.preferences);
-        Preference DirChooser = findPreference(getString(R.string.pref_key_storePath));
+
+        setupDirChooser();
+    }
+
+    private void setupDirChooser(){
+        Preference DirChooser = findPreference(getString(R.string.pref_key_store_path));
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        oldPath = sharedPref.getString(getString(R.string.pref_key_store_path), getString(R.string.pref_default_store_path));
+        DirChooser.setSummary(oldPath);
+
         DirChooser.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
             @Override
             public boolean onPreferenceClick(Preference pref){
-                mDialog = DirectoryChooserFragment.newInstance("BabySchedule", Environment.DIRECTORY_DOWNLOADS);
-                mDialog.show(getFragmentManager(),"ABC");
+                mDialog = DirectoryChooserFragment.newInstance("BabySchedule",oldPath);
+                mDialog.show(getFragmentManager(),null);
                 return true;
             }
         });
@@ -52,10 +62,22 @@ public class SettingsActivity extends PreferenceActivity implements DirectoryCho
 
     @Override
     public void onSelectDirectory(@NonNull final String path) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString(getString(R.string.pref_key_storePath), path);
-        editor.commit();
+
+        if(Utils.moveFiles(oldPath,path)) {
+            oldPath = path;
+            Preference DirChooser = findPreference(getString(R.string.pref_key_store_path));
+            DirChooser.setSummary(path);
+
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString(getString(R.string.pref_key_store_path), path);
+            editor.commit();
+        }
+        else
+        {
+            Toast.makeText(SettingsActivity.this, "目录无效", Toast.LENGTH_SHORT).show();
+        }
+
         mDialog.dismiss();
     }
 
@@ -63,6 +85,7 @@ public class SettingsActivity extends PreferenceActivity implements DirectoryCho
     public void onCancelChooser() {
         mDialog.dismiss();
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();

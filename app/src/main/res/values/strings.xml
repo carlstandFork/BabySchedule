@@ -48,12 +48,16 @@
     <string name="title_activity_detail">明细</string>
     <string name="title_activity_statistic">统计</string>
     <string name="no_enough_data">数据不足，无法统计，明天再来试试：）</string>
-    <string name="pref_key_exitWith2Back">exitWith2Back</string>
-    <string name="pref_exit">退出程序</string>
-    <string name="pref_exit_summ">按两次返回键退出</string>
-    <string name="pref_key_storePath">storePath</string>
+
+    <string name="ad_unit_id">ca-app-pub-5512781845194915/2384316316</string>
+
+    <!--Preference-->
+    <string name="pref_key_exit">exit</string>
+    <string name="pref_title_exit">退出程序</string>
+    <string name="pref_summary_exit">按两次返回键退出</string>
+
+    <string name="pref_key_store_path">storePath</string>
     <string name="pref_title_store_path">数据存储路径</string>
     <string name="pref_default_store_path">Download</string>
 
-    <string name="ad_unit_id">ca-app-pub-5512781845194915/2384316316</string>
 </resources>
