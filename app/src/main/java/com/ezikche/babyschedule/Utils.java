@@ -153,7 +153,7 @@ public class Utils {
                 Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
     }
 
-    /* get get file from directory or create both */
+    /* get file from directory or create both */
     public static File getStorageFile(String dir, String fileName) {
         File f = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), dir);
         if (!f.exists()) {
@@ -166,6 +166,7 @@ public class Utils {
         return null;
     }
 
+    /* get file list in Dir for charts*/
     public static List<File> getLatestStorageFile(String dir) {
         File f = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+File.separator+dir);
         if(f.exists()) {

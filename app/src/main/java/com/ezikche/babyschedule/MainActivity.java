@@ -193,7 +193,7 @@ public class MainActivity extends Activity
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean exitWith2Backs = sharedPref.getBoolean(SettingsActivity.KEY_PREF_EXIT, true);
+        boolean exitWith2Backs = sharedPref.getBoolean(getString(R.string.pref_key_storePath), true);
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN && exitWith2Backs) {
 
             if ((System.currentTimeMillis() - exitTime) > 2000) {
