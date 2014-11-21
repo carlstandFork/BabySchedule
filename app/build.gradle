@@ -8,8 +8,8 @@ android {
         applicationId "com.ezikche.babyschedule"
         minSdkVersion 16
         targetSdkVersion 20
-        versionCode 8
-        versionName "4.0"
+        versionCode 9
+        versionName "4.1"
     }
     buildTypes {
         release {
@@ -21,8 +21,6 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile files('libs/achartengine-1.2.0.jar')
-    compile files('libs/guava-18.0.jar')
     compile 'com.android.support:support-v4:21.0.0'
     compile 'com.google.android.gms:play-services:6.1.71'
     compile 'net.rdrei.android.dirchooser:library:2.1@aar'
