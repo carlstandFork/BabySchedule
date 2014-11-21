@@ -232,10 +232,7 @@ public class MainActivity extends Activity
 
     private String getPath(){
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String path = sharedPref.getString(getString(R.string.pref_key_store_path), getString(R.string.pref_default_store_path));
-        if(path.compareTo(getString(R.string.pref_default_store_path))==0)
-            return Utils.defaultPath;
-        else
-            return path;
+        String path = sharedPref.getString(getString(R.string.pref_key_store_path), Utils.defaultPath);
+        return path;
     }
 }

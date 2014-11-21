@@ -218,10 +218,7 @@ public class MultipleChart extends AbstractChart {
 
     private String getPath(){
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
-        String path = sharedPref.getString(mContext.getResources().getString(R.string.pref_key_store_path), mContext.getResources().getString(R.string.pref_default_store_path));
-        if(path.compareTo(mContext.getResources().getString(R.string.pref_default_store_path))==0)
-            return Utils.defaultPath;
-        else
-            return path;
+        String path = sharedPref.getString(mContext.getResources().getString(R.string.pref_key_store_path),Utils.defaultPath);
+        return path;
     }
 }

@@ -47,7 +47,7 @@ public class SettingsActivity extends PreferenceActivity implements DirectoryCho
     private void setupDirChooser(){
         Preference DirChooser = findPreference(getString(R.string.pref_key_store_path));
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        oldPath = sharedPref.getString(getString(R.string.pref_key_store_path), getString(R.string.pref_default_store_path));
+        oldPath = sharedPref.getString(getString(R.string.pref_key_store_path), Utils.defaultPath);
         DirChooser.setSummary(oldPath);
 
         DirChooser.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){

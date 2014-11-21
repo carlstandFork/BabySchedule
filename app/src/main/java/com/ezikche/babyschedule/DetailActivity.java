@@ -81,8 +81,6 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId())
         {
-            case R.id.action_settings:
-                return true;
             case android.R.id.home:
                 Intent upIntent = NavUtils.getParentActivityIntent(this);
                 if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
@@ -347,10 +345,7 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
 
     private String getPath(){
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String path = sharedPref.getString(getString(R.string.pref_key_store_path), getString(R.string.pref_default_store_path));
-        if(path.compareTo(getString(R.string.pref_default_store_path))==0)
-            return Utils.defaultPath;
-        else
-            return path;
+        String path = sharedPref.getString(getString(R.string.pref_key_store_path), Utils.defaultPath);
+        return path;
     }
 }
