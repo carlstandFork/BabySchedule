@@ -27,7 +27,7 @@ public class Utils {
     public static final int HEIGHT_DEFAULT = 40;
     public static final int TEMPERATURE_DEFAULT = 20;
 
-
+    public static String defaultPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath();
 
     public static final int[] colors = { Color.YELLOW, Color.MAGENTA,Color.CYAN,Color.RED, Color.GREEN };
     public static final int[] mBackgroundPics = new int[]{R.drawable.eat, R.drawable.poo,R.drawable.sleep};
@@ -154,21 +154,21 @@ public class Utils {
     }
 
     /* get file from directory or create both */
-    public static File getStorageFile(String dir, String fileName) {
-        File f = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), dir);
+    public static File getStorageFile(String path, String dir, String fileName) {
+        File f = new File(path, dir);
         if (!f.exists()) {
             if (f.mkdirs()) {
-                return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + File.separator + dir, fileName);
+                return new File(path + File.separator + dir, fileName);
             }
         } else
-            return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + File.separator + dir, fileName);
+            return new File(path + File.separator + dir, fileName);
 
         return null;
     }
 
     /* get file list in Dir for charts*/
-    public static List<File> getLatestStorageFile(String dir) {
-        File f = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+File.separator+dir);
+    public static List<File> getLatestStorageFile(String path, String dir) {
+        File f = new File(path+File.separator+dir);
         if(f.exists()) {
             File[] sortedFiles = f.listFiles();
             if(null != sortedFiles)
@@ -190,7 +190,15 @@ public class Utils {
         return null;
     }
 
-    public static boolean moveFiles(String Src, String Des){
-        return true;
+    public static boolean moveFiles(String src, String des){
+        if (isExternalStorageWritable()){
+            try {
+//                Files.copy(new File(src), new File(des));
+                return true;
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 }

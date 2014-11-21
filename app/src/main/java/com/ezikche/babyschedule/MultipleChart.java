@@ -16,8 +16,10 @@
 package com.ezikche.babyschedule;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint.Align;
+import android.preference.PreferenceManager;
 import android.view.View;
 
 import org.achartengine.ChartFactory;
@@ -125,7 +127,7 @@ public class MultipleChart extends AbstractChart {
     }
 
     private Date[] getXValues(String action){
-        List<File> fList = Utils.getLatestStorageFile(action);
+        List<File> fList = Utils.getLatestStorageFile(getPath(), action);
         if(fList!=null && fList.size()>0) {
             Date[] dates = new Date[fList.size()];
             for (int i = 0; i < fList.size(); ++i) {
@@ -143,7 +145,7 @@ public class MultipleChart extends AbstractChart {
     }
 
     private double[] getYValues(String action){
-        List<File> fList = Utils.getLatestStorageFile(action);
+        List<File> fList = Utils.getLatestStorageFile(getPath(),action);
         if(fList!=null && fList.size()>0) {
             double[] values = new double[fList.size()];
             for (int i = 0; i < fList.size(); ++i) {
@@ -214,4 +216,12 @@ public class MultipleChart extends AbstractChart {
         return sum/bodys.size();
     }
 
+    private String getPath(){
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+        String path = sharedPref.getString(mContext.getResources().getString(R.string.pref_key_store_path), mContext.getResources().getString(R.string.pref_default_store_path));
+        if(path.compareTo(mContext.getResources().getString(R.string.pref_default_store_path))==0)
+            return Utils.defaultPath;
+        else
+            return path;
+    }
 }

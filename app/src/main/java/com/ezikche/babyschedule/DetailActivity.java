@@ -5,8 +5,9 @@ import android.app.AlertDialog;
 import android.app.TaskStackBuilder;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -322,7 +323,7 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
     }
 
     private File getLatestStorageFile(String dir) {
-        File f = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+File.separator+dir);
+        File f = new File(getPath()+File.separator+dir);
         if(f.exists()) {
             mSortedFiles = f.listFiles();
             if(null != mSortedFiles)
@@ -342,5 +343,14 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
             }
         }
         return null;
+    }
+
+    private String getPath(){
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String path = sharedPref.getString(getString(R.string.pref_key_store_path), getString(R.string.pref_default_store_path));
+        if(path.compareTo(getString(R.string.pref_default_store_path))==0)
+            return Utils.defaultPath;
+        else
+            return path;
     }
 }

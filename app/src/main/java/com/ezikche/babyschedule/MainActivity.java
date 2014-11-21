@@ -138,7 +138,7 @@ public class MainActivity extends Activity
                 String time = String.format("%02d", TP.getCurrentHour()) + "." + String.format("%02d", TP.getCurrentMinute());
                 String[] fileNames = getResources().getStringArray(R.array.fileName);
                 try{
-                    BufferedReader buf = new BufferedReader(new FileReader(Utils.getStorageFile(fileNames[mCurrentAct], date)));
+                    BufferedReader buf = new BufferedReader(new FileReader(Utils.getStorageFile(getPath(),fileNames[mCurrentAct], date)));
                     String tmp;
                     while ((tmp = buf.readLine()) != null) {
                         int pos = tmp.indexOf(":");
@@ -161,7 +161,7 @@ public class MainActivity extends Activity
                 Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
 //              save to the file
                 if (Utils.isExternalStorageWritable()) {
-                    File outFile = Utils.getStorageFile(fileNames[mCurrentAct], date);
+                    File outFile = Utils.getStorageFile(getPath(),fileNames[mCurrentAct], date);
                     try {
                         FileOutputStream fos = new FileOutputStream(outFile, true);
                         fos.write(message.getBytes());
@@ -228,5 +228,14 @@ public class MainActivity extends Activity
             rightView.setBackgroundResource(Utils.mBackgroundPics[action % Utils.mBackgroundPics.length]);
             rightView.getBackground().setAlpha(0x20);
         }
+    }
+
+    private String getPath(){
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String path = sharedPref.getString(getString(R.string.pref_key_store_path), getString(R.string.pref_default_store_path));
+        if(path.compareTo(getString(R.string.pref_default_store_path))==0)
+            return Utils.defaultPath;
+        else
+            return path;
     }
 }
