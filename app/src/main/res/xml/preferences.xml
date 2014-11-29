@@ -11,4 +11,15 @@
         android:title="@string/pref_title_store_path"
         android:summary="@string/pref_default_store_path"
         android:defaultValue="@string/pref_default_store_path"/>
+    <CheckBoxPreference
+        android:key="@string/pref_key_pic_path_enable"
+        android:title="@string/pref_title_pic_path_enable"
+        android:defaultValue="false"
+        android:enabled="false"/>
+    <Preference
+        android:key="@string/pref_key_pic_path"
+        android:title="@string/pref_title_pic_path"
+        android:dependency="@string/pref_key_pic_path_enable"
+        android:defaultValue=""
+        android:enabled="false"/>
 </PreferenceScreen>

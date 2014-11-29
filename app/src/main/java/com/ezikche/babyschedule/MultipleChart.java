@@ -22,6 +22,9 @@ import android.graphics.Paint.Align;
 import android.preference.PreferenceManager;
 import android.view.View;
 
+import com.google.common.collect.Lists;
+import com.google.common.primitives.Ints;
+
 import org.achartengine.ChartFactory;
 import org.achartengine.chart.PointStyle;
 import org.achartengine.model.XYMultipleSeriesDataset;
@@ -51,7 +54,10 @@ public class MultipleChart extends AbstractChart {
      * @return the built intent
      */
     public View execute(int topMargin) {
-        int[] colors = new int[]{Color.rgb(0x9F, 0x9F, 0x5F), Color.MAGENTA, Color.BLUE, Color.RED, Color.DKGRAY};
+        List<Integer> listColor = Ints.asList(Utils.colors);
+        listColor = Lists.reverse(listColor);
+        int[] colors = Ints.toArray(listColor);
+
         PointStyle[] styles = new PointStyle[colors.length];
         for(int i =0; i<colors.length ;++i ) {
             styles[i] = PointStyle.POINT;
@@ -68,7 +74,7 @@ public class MultipleChart extends AbstractChart {
 //        renderer.setPanLimits(new double[] { -10, 20, -10, 40 });
 //        renderer.setZoomLimits(new double[] { -10, null, -10, null });
         renderer.setZoomRate(2.0f);
-        renderer.setXLabelsColor(Color.GREEN);
+        renderer.setXLabelsColor(Color.DKGRAY);
 
         renderer.setYAxisAlign(Align.RIGHT, 1);
         renderer.setYLabelsAlign(Align.LEFT, 1);
@@ -78,7 +84,6 @@ public class MultipleChart extends AbstractChart {
         renderer.setYLabelsAlign(Align.LEFT, 3);
         renderer.setYAxisAlign(Align.RIGHT, 4);
         renderer.setYLabelsAlign(Align.CENTER, 4);
-
 
         renderer.setMarginsColor(Color.WHITE);
 
@@ -92,6 +97,8 @@ public class MultipleChart extends AbstractChart {
         for (int i = 0; i < renderer.getSeriesRendererCount(); ++i) {
             renderer.setYLabelsColor(i, colors[renderer.getSeriesRendererCount() - 1 - i]);
         }
+//        double[] range = {dataset.getSeriesAt(0).getMinX(), dataset.getSeriesAt(0).getMaxX(),dataset.getSeriesAt(0).getMinY(), dataset.getSeriesAt(0).getMaxY()};
+//        renderer.setRange(range);
         View view = ChartFactory.getTimeChartView(mContext, dataset, renderer, mContext.getResources().getString(R.string.monthAndDay));
         return view;
     }

@@ -5,8 +5,14 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,6 +37,7 @@ public class MainActivity extends Activity
     private AdView mAdView;
     private int mCurrentAct = Utils.EAT;
     private long exitTime = 0;
+    private Drawable mBg = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,12 +48,20 @@ public class MainActivity extends Activity
 //        mAdView.setAdListener(new ToastAdListener(this));
         mAdView.loadAd(new AdRequest.Builder().build());
 
+        initBackground();
+
         ItemFragment itemFragment = (ItemFragment) getFragmentManager().findFragmentById(R.id.left_fragment);
         itemFragment.setSelectedItem(mCurrentAct);
         setRightBackgroundByAction(mCurrentAct);
-
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+
+        initBackground();
+        setRightBackgroundByAction(mCurrentAct);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -70,7 +85,6 @@ public class MainActivity extends Activity
             return true;
             case R.id.action_statistic:
                 if (Utils.isExternalStorageReadable()) {
-//                    Toast.makeText(this, "统计功能仍在拼命(>_<)开发中", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent();
                     intent.setClass(MainActivity.this, StatisticActivity.class);
                     startActivity(intent);
@@ -80,7 +94,6 @@ public class MainActivity extends Activity
                 return true;
             case R.id.action_detail:
                 if (Utils.isExternalStorageReadable()) {
-//                Toast.makeText(this, "明细即将打开:)", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent();
                     intent.setClass(MainActivity.this, DetailActivity.class);
                     startActivity(intent);
@@ -95,7 +108,6 @@ public class MainActivity extends Activity
     }
 
     public void onButtonNextPressed(View view) {
-//        Toast.makeText(this,"button next on act" + mCurrentAct + "pressed", Toast.LENGTH_LONG).show();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         String[] actions = getResources().getStringArray(R.array.actions);
@@ -182,37 +194,31 @@ public class MainActivity extends Activity
         });
 
         AlertDialog dialog = builder.create();
-//        dialog.setInverseBackgroundForced(false);
-//        Window window = dialog.getWindow();
-//        WindowManager.LayoutParams lp = window.getAttributes();
-//        lp.alpha = 0.8f;
-//        window.setAttributes(lp);
         dialog.show();
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean exitWith2Backs = sharedPref.getBoolean(getString(R.string.pref_key_exit), true);
-        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN && exitWith2Backs) {
-//            press back twice with in 2 secs
-            if ((System.currentTimeMillis() - exitTime) > 2000) {
-                Toast.makeText(getApplicationContext(), R.string.press_again_exit, Toast.LENGTH_SHORT).show();
-                exitTime = System.currentTimeMillis();
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+            boolean exitWith2Backs = sharedPref.getBoolean(getString(R.string.pref_key_exit), true);
+            // press back twice with in 2 secs
+            if (exitWith2Backs) {
+                if ((System.currentTimeMillis() - exitTime) > 2000) {
+                    Toast.makeText(getApplicationContext(), R.string.press_again_exit, Toast.LENGTH_SHORT).show();
+                    exitTime = System.currentTimeMillis();
+                } else {
+                    finish();
+                    System.exit(0);
+                }
+                return true;
             } else {
                 finish();
                 System.exit(0);
             }
-
-            return true;
-        }
-        else{
-            finish();
-            System.exit(0);
         }
         return super.onKeyDown(keyCode, event);
     }
-
     @Override
     public void onFragmentInteraction(String id, int position, View view) {
         mCurrentAct = position % Utils.colors.length;
@@ -225,8 +231,21 @@ public class MainActivity extends Activity
     private void setRightBackgroundByAction(int action) {
         View rightView = getFragmentManager().findFragmentById(R.id.right_fragment).getView();
         if (rightView != null) {
-            rightView.setBackgroundResource(Utils.mBackgroundPics[action % Utils.mBackgroundPics.length]);
-            rightView.getBackground().setAlpha(0x20);
+            if(mBg!=null){
+                try{
+                    rightView.setBackground(mBg);
+                    rightView.getBackground().setAlpha(0x80);
+                }
+                catch(Exception e){
+                    e.printStackTrace();
+                    rightView.setBackgroundResource(Utils.mBackgroundPics[action % Utils.mBackgroundPics.length]);
+                    rightView.getBackground().setAlpha(0x20);
+                }
+            }else{
+                rightView.setBackgroundResource(Utils.mBackgroundPics[action % Utils.mBackgroundPics.length]);
+                rightView.getBackground().setAlpha(0x20);
+            }
+
         }
     }
 
@@ -234,5 +253,37 @@ public class MainActivity extends Activity
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         String path = sharedPref.getString(getString(R.string.pref_key_store_path), Utils.defaultPath);
         return path;
+    }
+
+    private String getPicPath(){
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String path = sharedPref.getString(getString(R.string.pref_key_pic_path),"");
+        return path;
+    }
+
+    private void initBackground(){
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean backGroundEnable = sharedPref.getBoolean(getString(R.string.pref_key_pic_path_enable), false);
+        if(backGroundEnable) {
+            String picPath = getPicPath();
+            if (picPath.compareTo("") != 0) {
+                try {
+                    Display display = getWindowManager().getDefaultDisplay();
+                    Point size = new Point();
+                    display.getSize(size);
+                    Bitmap original = BitmapFactory.decodeFile(picPath);
+                    Bitmap b = Bitmap.createScaledBitmap(original, size.x, size.y, false);
+                    mBg = new BitmapDrawable(getResources(), b);
+                    original.recycle();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    mBg = null;
+                }
+            }
+        }
+        else{
+            mBg = null;
+        }
+
     }
 }

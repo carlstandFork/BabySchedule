@@ -138,12 +138,16 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
 
     private void setTextViewByAct(int position) {
         if (Utils.isExternalStorageReadable()) {
-
+            ListView rightView = (ListView) findViewById(R.id.listView);
             File inFile = getLatestStorageFile(mFileNames[position]);
             try {
                 getActionBar().setTitle(inFile.getName());
             } catch (Exception e) {
                 e.printStackTrace();
+                getActionBar().setTitle("");
+                ArrayAdapter adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, new ArrayList<String>());
+                rightView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
             }
 
             try {
@@ -176,7 +180,7 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
                     }
                 };
 
-                ListView rightView = (ListView) findViewById(R.id.listView);
+
                 rightView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
 
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id){
@@ -337,7 +341,13 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
                         return o2.getName().compareTo(o1.getName());
                     }
                 });
-                return files.get(mCurrentFileIndex);
+                try{
+                    File retFile = files.get(mCurrentFileIndex);
+                    return retFile;
+                }catch (Exception e){
+                    e.printStackTrace();
+                    return null;
+                }
             }
         }
         return null;

@@ -60,4 +60,9 @@
     <string name="pref_title_store_path">数据存储路径</string>
     <string name="pref_default_store_path">Download</string>
 
+    <string name="pref_key_pic_path_enable">picPathEnable</string>
+    <string name="pref_title_pic_path_enable">设置背景图片</string>
+
+    <string name="pref_key_pic_path">picPath</string>
+    <string name="pref_title_pic_path">背景图片路径</string>
 </resources>

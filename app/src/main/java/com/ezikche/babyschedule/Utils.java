@@ -29,7 +29,7 @@ public class Utils {
 
     public static String defaultPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath();
 
-    public static final int[] colors = { Color.YELLOW, Color.MAGENTA,Color.CYAN,Color.RED, Color.GREEN };
+    public static final int[] colors = { Color.rgb(0xCD, 0xCD, 0x00), Color.rgb(0xF0, 0x80, 0x80),Color.rgb(0x7C,0xCD,0x7C),Color.rgb(0xEE,0x30,0xA7), Color.rgb(0x46,0x82,0xB4) };
     public static final int[] mBackgroundPics = new int[]{R.drawable.eat, R.drawable.poo,R.drawable.sleep};
     public static String getMessageBodyByAct(int act, String[] displayedValues, int valuePos) {
         String body = "";

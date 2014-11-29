@@ -1,12 +1,16 @@
 package com.ezikche.babyschedule;
 
 import android.app.TaskStackBuilder;
+import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
@@ -33,7 +37,9 @@ public class SettingsActivity extends PreferenceActivity implements DirectoryCho
      * shown on tablets.
      */
     private DirectoryChooserFragment mDialog;
-    private String oldPath;
+    private String oldStorePath;
+    private String oldPicPath;
+    private int REQUEST_CODE_LOAD_IMAGE = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,30 +47,80 @@ public class SettingsActivity extends PreferenceActivity implements DirectoryCho
 
         addPreferencesFromResource(R.xml.preferences);
 
+        setupPicChooser();
         setupDirChooser();
+
     }
 
     private void setupDirChooser(){
         Preference DirChooser = findPreference(getString(R.string.pref_key_store_path));
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        oldPath = sharedPref.getString(getString(R.string.pref_key_store_path), Utils.defaultPath);
-        DirChooser.setSummary(oldPath);
+        oldStorePath = sharedPref.getString(getString(R.string.pref_key_store_path), Utils.defaultPath);
+        DirChooser.setSummary(oldStorePath);
 
-        DirChooser.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
+        DirChooser.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference pref) {
+                mDialog = DirectoryChooserFragment.newInstance("BabySchedule", oldStorePath);
+                mDialog.show(getFragmentManager(), null);
+                return true;
+            }
+        });
+    }
+
+    private void setupPicChooser(){
+        Preference PicChooser = findPreference(getString(R.string.pref_key_pic_path));
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        oldPicPath = sharedPref.getString(getString(R.string.pref_key_pic_path), Utils.defaultPath);
+        PicChooser.setSummary(oldPicPath);
+
+        PicChooser.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
             @Override
             public boolean onPreferenceClick(Preference pref){
-                mDialog = DirectoryChooserFragment.newInstance("BabySchedule",oldPath);
-                mDialog.show(getFragmentManager(),null);
+                Intent intent = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, REQUEST_CODE_LOAD_IMAGE);
                 return true;
             }
         });
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode,
+                                    Intent data) {
+        if (requestCode == REQUEST_CODE_LOAD_IMAGE) {
+            if (resultCode == RESULT_OK) {
+                String picPath = getRealPathFromURI(data.getData());
+                oldPicPath = picPath;
+                Preference DirChooser = findPreference(getString(R.string.pref_key_pic_path));
+                DirChooser.setSummary(picPath);
+
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putString(getString(R.string.pref_key_pic_path), picPath);
+                editor.commit();
+            }
+        }
+    }
+
+    private String getRealPathFromURI(Uri contentUri) {
+        String[] proj = { MediaStore.Images.Media.DATA };
+
+        CursorLoader cursorLoader = new CursorLoader(
+                this,
+                contentUri, proj, null, null, null);
+        Cursor cursor = cursorLoader.loadInBackground();
+
+        int column_index =
+                cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
+    }
+
+    @Override
     public void onSelectDirectory(@NonNull final String path) {
 
-        if(Utils.moveFiles(oldPath,path)) {
-            oldPath = path;
+        if(Utils.moveFiles(oldStorePath,path)) {
+            oldStorePath = path;
             Preference DirChooser = findPreference(getString(R.string.pref_key_store_path));
             DirChooser.setSummary(path);
 
