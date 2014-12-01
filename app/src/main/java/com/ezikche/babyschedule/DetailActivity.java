@@ -197,7 +197,7 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
 
                             min = Integer.parseInt(inTime.substring(separatorPos + 1, separatorPos + 3));
                         } catch (Exception e) {
-                            Toast.makeText(DetailActivity.this, "时间数据格式非法", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(DetailActivity.this, getResources().getString(R.string.illegal_data_format), Toast.LENGTH_SHORT).show();
                         }
 
                         String[] displayedValues = Utils.getDisplayValuesByAct(mCurrentAct);
@@ -206,7 +206,7 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
                         try {
                             oldValue = Utils.getDigValue(inContent);
                         } catch (Exception e) {
-                            Toast.makeText(DetailActivity.this, "数据格式非法", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(DetailActivity.this, getResources().getString(R.string.illegal_data_format), Toast.LENGTH_SHORT).show();
                         }
 
                         int valuePos = Arrays.asList(displayedValues).indexOf(String.valueOf(oldValue));
@@ -311,7 +311,7 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
                 }
                 fos.close();
 
-                Toast.makeText(DetailActivity.this, "文件写入成功", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DetailActivity.this, getResources().getString(R.string.write_file_succeed), Toast.LENGTH_SHORT).show();
                 setTextViewByAct(mCurrentAct);
                 return true;
             } catch (IOException e) {
@@ -319,7 +319,7 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
             }
 
         } else {
-            Toast.makeText(DetailActivity.this, "文件系统不可写", Toast.LENGTH_SHORT).show();
+            Toast.makeText(DetailActivity.this, getResources().getString(R.string.file_not_writable), Toast.LENGTH_SHORT).show();
         }
         return false;
     }

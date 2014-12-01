@@ -37,6 +37,7 @@ import java.io.FileReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -97,10 +98,28 @@ public class MultipleChart extends AbstractChart {
         for (int i = 0; i < renderer.getSeriesRendererCount(); ++i) {
             renderer.setYLabelsColor(i, colors[renderer.getSeriesRendererCount() - 1 - i]);
         }
-//        double[] range = {dataset.getSeriesAt(0).getMinX(), dataset.getSeriesAt(0).getMaxX(),dataset.getSeriesAt(0).getMinY(), dataset.getSeriesAt(0).getMaxY()};
-//        renderer.setRange(range);
+
+        double maxX = findMaxX(dataset);
+        renderer.setXAxisMin(getOneWeekBefore((long) maxX));
+        renderer.setXAxisMax(maxX);
+
         View view = ChartFactory.getTimeChartView(mContext, dataset, renderer, mContext.getResources().getString(R.string.monthAndDay));
         return view;
+    }
+
+    private double getOneWeekBefore(long data){
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(data);
+        c.add(Calendar.DAY_OF_YEAR, -7);
+        return c.getTimeInMillis();
+    }
+
+    private double findMaxX(XYMultipleSeriesDataset dataset){
+        double maxX = 0;
+        for(int i = 0 ; i < dataset.getSeriesCount(); ++i){
+            maxX = maxX>dataset.getSeriesAt(i).getMaxX()? maxX:dataset.getSeriesAt(i).getMaxX();
+        }
+        return maxX;
     }
 
     private XYMultipleSeriesDataset getDataSet(Context context, int colorsLength){

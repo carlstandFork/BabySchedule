@@ -1,5 +1,6 @@
 package com.ezikche.babyschedule;
 
+import android.app.Application;
 import android.graphics.Color;
 import android.os.Environment;
 
@@ -13,7 +14,7 @@ import java.util.List;
 /**
  * Created by ezikche on 9/30/2014.
  */
-public class Utils {
+public class Utils extends Application{
 
     public static final int EAT = 0;
     public static final int POO = 1;
@@ -31,35 +32,22 @@ public class Utils {
 
     public static final int[] colors = { Color.rgb(0xCD, 0xCD, 0x00), Color.rgb(0xF0, 0x80, 0x80),Color.rgb(0x7C,0xCD,0x7C),Color.rgb(0xEE,0x30,0xA7), Color.rgb(0x46,0x82,0xB4) };
     public static final int[] mBackgroundPics = new int[]{R.drawable.eat, R.drawable.poo,R.drawable.sleep};
+
+    private static Utils mUtils = null;
+    @Override
+    public void onCreate(){
+        super.onCreate();
+        mUtils = this;
+    }
+
     public static String getMessageBodyByAct(int act, String[] displayedValues, int valuePos) {
         String body = "";
-        switch (act) {
-            case EAT: {
-                body = "宝宝喝了" + displayedValues[valuePos] + "毫升奶\n";
-            }
-            break;
-            case POO: {
-                body = "宝宝拉了" + displayedValues[valuePos] + "次臭臭\n";
-            }
-            break;
-            case SLEEP: {
-                body = "宝宝睡了" + displayedValues[valuePos] + "小时觉觉\n";
-            }
-            break;
-            case WEIGHT: {
-                body = "宝宝重" + displayedValues[valuePos] + "公斤\n";
-            }
-            break;
-            case HEIGHT: {
-                body = "宝宝长" + displayedValues[valuePos] + "CM\n";
-            }
-            break;
-            case TEMPERATURE: {
-                body = "宝宝体温" + displayedValues[valuePos] + "摄氏度\n";
-            }
-            break;
-            default:
-                break;
+        String[] acts = mUtils.getApplicationContext().getResources().getStringArray(R.array.actions_acts);
+        String[] units = mUtils.getApplicationContext().getResources().getStringArray(R.array.actions_units);
+        try{
+            body =  acts[act] + displayedValues[valuePos] + units[act] + "\n";
+        }catch(Exception e){
+            e.printStackTrace();
         }
         return body;
     }

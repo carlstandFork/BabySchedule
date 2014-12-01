@@ -16,6 +16,14 @@
         <item>CM</item>
         <item>摄氏度</item>
     </string-array>
+    <string-array name="actions_acts">
+        <item>宝宝喝了</item>
+        <item>宝宝拉了</item>
+        <item>宝宝睡了</item>
+        <item>宝宝重</item>
+        <item>宝宝长</item>
+        <item>摄氏度</item>
+    </string-array>
     <string-array name="dialogMsg">
         <item>宝宝喝了多少毫升奶？</item>
         <item>宝宝拉了几次臭臭？</item>
@@ -48,6 +56,15 @@
     <string name="title_activity_detail">明细</string>
     <string name="title_activity_statistic">统计</string>
     <string name="no_enough_data">数据不足，无法统计，明天再来试试：）</string>
+
+    <string name="duplicate_date">时间重复</string>
+    <string name="write_file_succeed">文件写入成功</string>
+    <string name="file_not_readable">文件系统不可读</string>
+    <string name="file_not_writable">文件系统不可写</string>
+    <string name="illegal_data_format">时间数据格式非法</string>
+    <string name="default_dir_anme">BabySchedule</string>
+    <string name="invalid_dir">目录无效</string>
+
 
     <string name="ad_unit_id">ca-app-pub-5512781845194915/2384316316</string>
 

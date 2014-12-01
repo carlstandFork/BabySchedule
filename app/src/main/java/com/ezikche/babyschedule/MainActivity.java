@@ -89,7 +89,7 @@ public class MainActivity extends Activity
                     intent.setClass(MainActivity.this, StatisticActivity.class);
                     startActivity(intent);
                 } else {
-                    Toast.makeText(this, "文件系统不可读", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getResources().getString(R.string.file_not_readable), Toast.LENGTH_SHORT).show();
                 }
                 return true;
             case R.id.action_detail:
@@ -98,7 +98,7 @@ public class MainActivity extends Activity
                     intent.setClass(MainActivity.this, DetailActivity.class);
                     startActivity(intent);
                 } else{
-                    Toast.makeText(this, "文件系统不可读", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getResources().getString(R.string.file_not_readable), Toast.LENGTH_SHORT).show();
                 }
                 return true;
             default:
@@ -156,7 +156,7 @@ public class MainActivity extends Activity
                         int pos = tmp.indexOf(":");
                         if(tmp.substring(0, pos).indexOf(time) != -1)
                         {
-                            Toast.makeText(MainActivity.this, "时间重复", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, getResources().getString(R.string.duplicate_date), Toast.LENGTH_SHORT).show();
                             return ;
                         }
                     }
@@ -179,7 +179,7 @@ public class MainActivity extends Activity
                         fos.write(message.getBytes());
                         fos.close();
 
-                        Toast.makeText(MainActivity.this, "文件写入成功", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, getResources().getString(R.string.write_file_succeed), Toast.LENGTH_SHORT).show();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
