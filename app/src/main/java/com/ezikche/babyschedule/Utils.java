@@ -284,7 +284,7 @@ public class Utils extends Application{
         return sum/bodys.size();
     }
 
-    private static String getPath(){
+    public static String getPath(){
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mUtils.getApplicationContext());
         String path = sharedPref.getString(mUtils.getApplicationContext().getResources().getString(R.string.pref_key_store_path),Utils.defaultPath);
         return path;

@@ -150,7 +150,7 @@ public class MainActivity extends Activity
                 String time = String.format("%02d", TP.getCurrentHour()) + "." + String.format("%02d", TP.getCurrentMinute());
                 String[] fileNames = getResources().getStringArray(R.array.folderName);
                 try{
-                    BufferedReader buf = new BufferedReader(new FileReader(Utils.getStorageFile(getPath(),fileNames[mCurrentAct], date)));
+                    BufferedReader buf = new BufferedReader(new FileReader(Utils.getStorageFile(Utils.getPath(),fileNames[mCurrentAct], date)));
                     String tmp;
                     while ((tmp = buf.readLine()) != null) {
                         int pos = tmp.indexOf(":");
@@ -173,7 +173,7 @@ public class MainActivity extends Activity
                 Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
 //              save to the file
                 if (Utils.isExternalStorageWritable()) {
-                    File outFile = Utils.getStorageFile(getPath(),fileNames[mCurrentAct], date);
+                    File outFile = Utils.getStorageFile(Utils.getPath(),fileNames[mCurrentAct], date);
                     try {
                         FileOutputStream fos = new FileOutputStream(outFile, true);
                         fos.write(message.getBytes());
@@ -247,12 +247,6 @@ public class MainActivity extends Activity
             }
 
         }
-    }
-
-    private String getPath(){
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String path = sharedPref.getString(getString(R.string.pref_key_store_path), Utils.defaultPath);
-        return path;
     }
 
     private String getPicPath(){
