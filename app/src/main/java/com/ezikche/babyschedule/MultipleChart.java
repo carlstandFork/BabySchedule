@@ -16,10 +16,8 @@
 package com.ezikche.babyschedule;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint.Align;
-import android.preference.PreferenceManager;
 import android.view.View;
 
 import com.google.common.collect.Lists;
@@ -30,12 +28,6 @@ import org.achartengine.chart.PointStyle;
 import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -126,19 +118,19 @@ public class MultipleChart extends AbstractChart {
         List<Date[]> dates = new ArrayList<Date[]>();
         List<double[]> values = new ArrayList<double[]>();
         String[] actions = context.getResources().getStringArray(R.array.actions);
-        String[] folderNames = context.getResources().getStringArray(R.array.fileName);
+        String[] folderNames = context.getResources().getStringArray(R.array.folderName);
         String[] actionUnits = context.getResources().getStringArray(R.array.actions_units);
         XYMultipleSeriesDataset dataset = null;
         int SeriesNr = 0;
         for (int i = 0; i < colorsLength; ++i){
-            Date[] date = getXValues(folderNames[i]);
-            double[] yValue = getYValues(folderNames[i]);
+            Date[] date = Utils.getXValues(folderNames[i]);
+            double[] yValue = Utils.getYValues(folderNames[i]);
             if ((date == null || date!=null && date.length < 2) ||
                     (yValue==null || yValue!=null && yValue.length < 2)) {
                 continue;
             }
-            dates.add(getXValues(folderNames[i]));
-            values.add(getYValues(folderNames[i]));
+            dates.add(Utils.getXValues(folderNames[i]));
+            values.add(Utils.getYValues(folderNames[i]));
 //            renderer.setYTitle(actionUnits[i], i);
 
             if(dataset==null) {
@@ -152,99 +144,5 @@ public class MultipleChart extends AbstractChart {
         return dataset;
     }
 
-    private Date[] getXValues(String action){
-        List<File> fList = Utils.getLatestStorageFile(getPath(), action);
-        if(fList!=null && fList.size()>0) {
-            Date[] dates = new Date[fList.size()];
-            for (int i = 0; i < fList.size(); ++i) {
-                try {
-                    Date fDate = new SimpleDateFormat(mContext.getResources().getString(R.string.yearMonthDay)).parse(fList.get(i).getName());
-                    dates[i] = fDate;
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-            }
-            return dates;
-        }
-        else
-            return null;
-    }
 
-    private double[] getYValues(String action){
-        List<File> fList = Utils.getLatestStorageFile(getPath(),action);
-        if(fList!=null && fList.size()>0) {
-            double[] values = new double[fList.size()];
-            for (int i = 0; i < fList.size(); ++i) {
-                if(action.compareTo("weight")==0 || action.compareTo("height")==0){
-                    values[i] = getAverageValuesFromFile(fList.get(i));
-                }
-                else{
-                    values[i] = getSumValuesFromFile(fList.get(i));
-                }
-            }
-            return values;
-        }
-        else
-            return null;
-    }
-
-    private double getSumValuesFromFile(File file){
-        BufferedReader buf = null;
-        try {
-            buf = new BufferedReader(new FileReader(file));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        double sum = 0;
-        final ArrayList<String> bodys = new ArrayList<String>();
-        String tmp;
-        try {
-            while ((tmp = buf.readLine()) != null) {
-                int pos = tmp.indexOf(":");
-                bodys.add(tmp.substring(pos + 1));
-            }
-
-            for(String line : bodys){
-                sum = sum + Utils.getDigValue(line);
-            }
-        }
-        catch(Exception e) {
-            e.printStackTrace();
-        }
-
-        return sum;
-    }
-
-    private double getAverageValuesFromFile(File file){
-        BufferedReader buf = null;
-        try {
-            buf = new BufferedReader(new FileReader(file));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        double sum = 0;
-        final ArrayList<String> bodys = new ArrayList<String>();
-        String tmp;
-        int arraySize = 0;
-        try {
-            while ((tmp = buf.readLine()) != null) {
-                int pos = tmp.indexOf(":");
-                bodys.add(tmp.substring(pos + 1));
-            }
-
-            for(String line : bodys){
-                sum = sum + Utils.getDigValue(line);
-            }
-        }
-        catch(Exception e) {
-            e.printStackTrace();
-        }
-        return sum/bodys.size();
-    }
-
-    private String getPath(){
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
-        String path = sharedPref.getString(mContext.getResources().getString(R.string.pref_key_store_path),Utils.defaultPath);
-        return path;
-    }
 }

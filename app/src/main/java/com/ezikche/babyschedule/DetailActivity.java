@@ -9,9 +9,12 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
+import android.support.v4.view.GestureDetectorCompat;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -40,16 +43,22 @@ import java.util.List;
 
 //import org.apache.commons;
 
-public class DetailActivity extends Activity implements ItemFragment.OnFragmentInteractionListener {
+public class DetailActivity extends Activity implements ItemFragment.OnFragmentInteractionListener,
+        GestureDetector.OnGestureListener{
     private AdView mAdView;
     private int mCurrentAct = Utils.EAT;
     private File[] mSortedFiles = null;
     private int mCurrentFileIndex = 0;
-    private String[] mFileNames = null;
+    private String[] mFolderNames = null;
+
+    private static final int SWIPE_THRESHOLD = 100;
+    private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+
+    private GestureDetectorCompat mDetector;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mFileNames = getResources().getStringArray(R.array.fileName);
+        mFolderNames = getResources().getStringArray(R.array.folderName);
         setContentView(R.layout.layout_large_detail);
 
         mAdView = (AdView) findViewById(R.id.adView);
@@ -61,7 +70,7 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        mDetector = new GestureDetectorCompat(this,this);
         setTextViewByAct(mCurrentAct);
         setRightBackgroundByAction(mCurrentAct);
     }
@@ -71,6 +80,69 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.detail, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event){
+        this.mDetector.onTouchEvent(event);
+        // Be sure to call the superclass implementation
+        return super.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean onDown(MotionEvent event) {
+        return true;
+    }
+
+    @Override
+    public boolean onFling(MotionEvent event1, MotionEvent event2,
+                           float velocityX, float velocityY) {
+        boolean result = false;
+        try {
+            float diffY = event2.getY() - event1.getY();
+            float diffX = event2.getX() - event1.getX();
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (diffX > 0) {
+                        showPrevRecord();
+                    } else {
+                        showNextRecord();
+                    }
+                }
+                result = true;
+            }
+            else if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                if (diffY > 0) {
+//                    onSwipeBottom();
+                } else {
+//                    onSwipeTop();
+                }
+            }
+            result = true;
+
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        return result;
+    }
+
+    @Override
+    public void onLongPress(MotionEvent event) {
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
+                            float distanceY) {
+        return true;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent event) {
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent event) {
         return true;
     }
 
@@ -93,22 +165,10 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
                 }
                 break;
             case R.id.action_prev:
-                if(mSortedFiles!=null && mSortedFiles.length>0){
-                    ++mCurrentFileIndex;
-                    if(mCurrentFileIndex>mSortedFiles.length-1)
-                        mCurrentFileIndex = 0;
-                    setTextViewByAct(mCurrentAct);
-                    setRightBackgroundByAction(mCurrentAct);
-                }
+                showPrevRecord();
                 break;
             case R.id.action_next:
-                if(mSortedFiles!=null && mSortedFiles.length>0) {
-                    --mCurrentFileIndex;
-                    if (mCurrentFileIndex < 0)
-                        mCurrentFileIndex = mSortedFiles.length - 1;
-                    setTextViewByAct(mCurrentAct);
-                    setRightBackgroundByAction(mCurrentAct);
-                }
+                showNextRecord();
                 break;
             default:
                 break;
@@ -116,6 +176,25 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
         return super.onOptionsItemSelected(item);
     }
 
+    private void showPrevRecord(){
+        if(mSortedFiles!=null && mSortedFiles.length>0){
+            ++mCurrentFileIndex;
+            if(mCurrentFileIndex>mSortedFiles.length-1)
+                mCurrentFileIndex = 0;
+            setTextViewByAct(mCurrentAct);
+            setRightBackgroundByAction(mCurrentAct);
+        }
+    }
+
+    private void showNextRecord(){
+        if(mSortedFiles!=null && mSortedFiles.length>0) {
+            --mCurrentFileIndex;
+            if (mCurrentFileIndex < 0)
+                mCurrentFileIndex = mSortedFiles.length - 1;
+            setTextViewByAct(mCurrentAct);
+            setRightBackgroundByAction(mCurrentAct);
+        }
+    }
     @Override
     public void onFragmentInteraction(String id, int position, View view)
     {
@@ -139,9 +218,11 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
     private void setTextViewByAct(int position) {
         if (Utils.isExternalStorageReadable()) {
             ListView rightView = (ListView) findViewById(R.id.listView);
-            File inFile = getLatestStorageFile(mFileNames[position]);
+            File inFile = getLatestStorageFile(mFolderNames[position]);
             try {
-                getActionBar().setTitle(inFile.getName());
+                String[] actionUnits = getResources().getStringArray(R.array.actions_units);
+                String value = String.valueOf((Utils.getYValue(mFolderNames[position], inFile)));
+                getActionBar().setTitle(inFile.getName() + " " + value + actionUnits[position]);
             } catch (Exception e) {
                 e.printStackTrace();
                 getActionBar().setTitle("");
@@ -180,10 +261,16 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
                     }
                 };
 
+                rightView.setOnTouchListener(new View.OnTouchListener() {
+                    public boolean onTouch(View v, MotionEvent event) {
+                        ((DetailActivity)v.getContext()).onTouchEvent(event);
+                        return false;
+                    }
+                });
 
-                rightView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+                rightView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id){
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         String inTime = ((TextView) view.findViewById(android.R.id.text1)).getText().toString();
                         String inContent = ((TextView) view.findViewById(android.R.id.text2)).getText().toString();
                         int spacePos = inTime.indexOf(" ");
@@ -281,7 +368,7 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
 
     private boolean writeFile(ArrayList<String> titles, ArrayList<String> bodys) {
         if (Utils.isExternalStorageWritable()) {
-            File outFile = getLatestStorageFile(mFileNames[mCurrentAct]);
+            File outFile = getLatestStorageFile(mFolderNames[mCurrentAct]);
             if(titles.size() == 1 && bodys.size() == 1) {
                 try {
                     outFile.delete();

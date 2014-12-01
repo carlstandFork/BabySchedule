@@ -148,7 +148,7 @@ public class MainActivity extends Activity
                 TimePicker TP = (TimePicker) (MainActivity.this.findViewById(R.id.timePicker));
                 String date = DP.getYear() + "." + String.format("%02d", DP.getMonth() + 1) + "." + String.format("%02d", DP.getDayOfMonth());
                 String time = String.format("%02d", TP.getCurrentHour()) + "." + String.format("%02d", TP.getCurrentMinute());
-                String[] fileNames = getResources().getStringArray(R.array.fileName);
+                String[] fileNames = getResources().getStringArray(R.array.folderName);
                 try{
                     BufferedReader buf = new BufferedReader(new FileReader(Utils.getStorageFile(getPath(),fileNames[mCurrentAct], date)));
                     String tmp;

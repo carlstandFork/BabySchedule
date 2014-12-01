@@ -1,14 +1,23 @@
 package com.ezikche.babyschedule;
 
 import android.app.Application;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -178,6 +187,108 @@ public class Utils extends Application{
         return null;
     }
 
+    public static Date[] getXValues(String action){
+        List<File> fList = Utils.getLatestStorageFile(getPath(), action);
+        if(fList!=null && fList.size()>0) {
+            Date[] dates = new Date[fList.size()];
+            for (int i = 0; i < fList.size(); ++i) {
+                try {
+                    Date fDate = new SimpleDateFormat(mUtils.getApplicationContext().getResources().getString(R.string.yearMonthDay)).parse(fList.get(i).getName());
+                    dates[i] = fDate;
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+            return dates;
+        }
+        else
+            return null;
+    }
+
+    public static double[] getYValues(String action){
+        List<File> fList = Utils.getLatestStorageFile(getPath(),action);
+        if(fList!=null && fList.size()>0) {
+            double[] values = new double[fList.size()];
+            for (int i = 0; i < fList.size(); ++i) {
+                    values[i] = getYValue(action, fList.get(i));
+            }
+            return values;
+        }
+        else
+            return null;
+    }
+
+    public static double getYValue(String action, File file){
+        double value;
+        String[] folderNames = mUtils.getApplicationContext().getResources().getStringArray(R.array.folderName);
+        if(action.compareTo(folderNames[3])==0 || action.compareTo(folderNames[4])==0){
+            value = getAverageValuesFromFile(file);
+        }
+        else{
+            value = getSumValuesFromFile(file);
+        }
+        return value;
+    }
+
+    private static double getSumValuesFromFile(File file){
+        BufferedReader buf = null;
+        try {
+            buf = new BufferedReader(new FileReader(file));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        double sum = 0;
+        final ArrayList<String> bodys = new ArrayList<String>();
+        String tmp;
+        try {
+            while ((tmp = buf.readLine()) != null) {
+                int pos = tmp.indexOf(":");
+                bodys.add(tmp.substring(pos + 1));
+            }
+
+            for(String line : bodys){
+                sum = sum + Utils.getDigValue(line);
+            }
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        return sum;
+    }
+
+    private static double getAverageValuesFromFile(File file){
+        BufferedReader buf = null;
+        try {
+            buf = new BufferedReader(new FileReader(file));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        double sum = 0;
+        final ArrayList<String> bodys = new ArrayList<String>();
+        String tmp;
+        int arraySize = 0;
+        try {
+            while ((tmp = buf.readLine()) != null) {
+                int pos = tmp.indexOf(":");
+                bodys.add(tmp.substring(pos + 1));
+            }
+
+            for(String line : bodys){
+                sum = sum + Utils.getDigValue(line);
+            }
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+        return sum/bodys.size();
+    }
+
+    private static String getPath(){
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mUtils.getApplicationContext());
+        String path = sharedPref.getString(mUtils.getApplicationContext().getResources().getString(R.string.pref_key_store_path),Utils.defaultPath);
+        return path;
+    }
     public static boolean moveFiles(String src, String des){
         if (isExternalStorageWritable()){
             try {

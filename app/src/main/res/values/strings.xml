@@ -31,7 +31,7 @@
         <item>宝宝现在几公斤重了？</item>
         <item>宝宝现在几厘米高了？</item>
     </string-array>
-    <string-array name="fileName">
+    <string-array name="folderName">
         <item>eat</item>
         <item>poo</item>
         <item>sleep</item>
@@ -55,6 +55,7 @@
     <string name="delete">删除</string>
     <string name="title_activity_detail">明细</string>
     <string name="title_activity_statistic">统计</string>
+    <string name="title_activity_settings">统计</string>
     <string name="no_enough_data">数据不足，无法统计，明天再来试试：）</string>
 
     <string name="duplicate_date">时间重复</string>
