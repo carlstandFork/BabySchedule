@@ -6,10 +6,15 @@ import android.app.TaskStackBuilder;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.GestureDetectorCompat;
+import android.view.Display;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -29,6 +34,8 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.TreeMultimap;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -53,6 +60,8 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
 
     private static final int SWIPE_THRESHOLD = 100;
     private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+
+    private Target mTarget = null;
 
     private GestureDetectorCompat mDetector;
     @Override
@@ -207,11 +216,50 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
         setRightBackgroundByAction(mCurrentAct);
     }
 
-    private void setRightBackgroundByAction(int action){
-        View rightView = getFragmentManager().findFragmentById(R.id.right_fragment).getView();
+    private void setDefaultBackground(View view, int action){
+        view.setBackgroundResource(Utils.mBackgroundPics[action % Utils.mBackgroundPics.length]);
+        view.getBackground().setAlpha(0x20);
+    }
+
+    private void setRightBackgroundByAction(final int action){
+        final View rightView = getFragmentManager().findFragmentById(R.id.right_fragment).getView();
         if (rightView != null) {
-            rightView.setBackgroundResource(Utils.mBackgroundPics[action % Utils.mBackgroundPics.length]);
-            rightView.getBackground().setAlpha(0x20);
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+            boolean backGroundEnable = sharedPref.getBoolean(getString(R.string.pref_key_pic_path_enable), false);
+            if(backGroundEnable){
+                try{
+                    mTarget = new Target(){
+                        @Override
+                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                            rightView.setBackground(new BitmapDrawable(getResources(), bitmap));
+                            rightView.getBackground().setAlpha(0x80);
+                        }
+
+                        @Override
+                        public void onBitmapFailed(Drawable errorDrawable) {
+                            setDefaultBackground(rightView, action);
+                        }
+
+                        @Override
+                        public void onPrepareLoad(Drawable placeHolderDrawable) {
+                            setDefaultBackground(rightView, action);
+                        }
+                    };
+                    Display display = getWindowManager().getDefaultDisplay();
+                    Point size = new Point();
+                    display.getSize(size);
+                    Picasso.with(DetailActivity.this).load(getPicPath()).resize(size.x, size.y).into(mTarget);
+
+                }
+                catch(Exception e){
+                    e.printStackTrace();
+                    setDefaultBackground(rightView, action);
+                }
+            }
+            else
+            {
+                setDefaultBackground(rightView,action);
+            }
         }
     }
 
@@ -443,6 +491,12 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
     private String getPath(){
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         String path = sharedPref.getString(getString(R.string.pref_key_store_path), Utils.defaultPath);
+        return path;
+    }
+
+    private String getPicPath(){
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String path = sharedPref.getString(getString(R.string.pref_key_pic_path),"");
         return path;
     }
 }

@@ -1,20 +1,15 @@
 package com.ezikche.babyschedule;
 
 import android.app.TaskStackBuilder;
-import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import net.rdrei.android.dirchooser.DirectoryChooserFragment;
 
@@ -89,10 +84,10 @@ public class SettingsActivity extends PreferenceActivity implements DirectoryCho
                                     Intent data) {
         if (requestCode == REQUEST_CODE_LOAD_IMAGE) {
             if (resultCode == RESULT_OK) {
-                String picPath = getRealPathFromURI(data.getData());
-                oldPicPath = picPath;
+                String picPath = data.getData().toString();
                 Preference DirChooser = findPreference(getString(R.string.pref_key_pic_path));
-                DirChooser.setSummary(picPath);
+                oldPicPath = data.getData().toString();
+                DirChooser.setSummary(oldPicPath);
 
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
                 SharedPreferences.Editor editor = sharedPref.edit();
@@ -102,37 +97,30 @@ public class SettingsActivity extends PreferenceActivity implements DirectoryCho
         }
     }
 
-    private String getRealPathFromURI(Uri contentUri) {
-        String[] proj = { MediaStore.Images.Media.DATA };
-
-        CursorLoader cursorLoader = new CursorLoader(
-                this,
-                contentUri, proj, null, null, null);
-        Cursor cursor = cursorLoader.loadInBackground();
-
-        int column_index =
-                cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-        cursor.moveToFirst();
-        return cursor.getString(column_index);
-    }
+//    private String getRealPathFromURI(Uri contentUri) {
+//        String[] proj = { MediaStore.Images.Media.DATA };
+//
+//        CursorLoader cursorLoader = new CursorLoader(
+//                this,
+//                contentUri, proj, null, null, null);
+//        Cursor cursor = cursorLoader.loadInBackground();
+//
+//        int column_index =
+//                cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+//        cursor.moveToFirst();
+//        return cursor.getString(column_index);
+//    }
 
     @Override
     public void onSelectDirectory(@NonNull final String path) {
+        oldStorePath = path;
+        Preference DirChooser = findPreference(getString(R.string.pref_key_store_path));
+        DirChooser.setSummary(path);
 
-        if(Utils.moveFiles(oldStorePath,path)) {
-            oldStorePath = path;
-            Preference DirChooser = findPreference(getString(R.string.pref_key_store_path));
-            DirChooser.setSummary(path);
-
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putString(getString(R.string.pref_key_store_path), path);
-            editor.commit();
-        }
-        else
-        {
-            Toast.makeText(SettingsActivity.this, getResources().getString(R.string.invalid_dir), Toast.LENGTH_SHORT).show();
-        }
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(getString(R.string.pref_key_store_path), path);
+        editor.commit();
 
         mDialog.dismiss();
     }

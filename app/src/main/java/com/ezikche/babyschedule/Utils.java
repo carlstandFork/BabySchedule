@@ -3,6 +3,7 @@ package com.ezikche.babyschedule;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 
@@ -43,6 +44,8 @@ public class Utils extends Application{
     public static final int[] mBackgroundPics = new int[]{R.drawable.eat, R.drawable.poo,R.drawable.sleep};
 
     private static Utils mUtils = null;
+    private static Drawable mBg = null;
+
     @Override
     public void onCreate(){
         super.onCreate();
@@ -288,16 +291,5 @@ public class Utils extends Application{
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mUtils.getApplicationContext());
         String path = sharedPref.getString(mUtils.getApplicationContext().getResources().getString(R.string.pref_key_store_path),Utils.defaultPath);
         return path;
-    }
-    public static boolean moveFiles(String src, String des){
-        if (isExternalStorageWritable()){
-            try {
-//                Files.copy(new File(src), new File(des));
-                return true;
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-        }
-        return false;
     }
 }

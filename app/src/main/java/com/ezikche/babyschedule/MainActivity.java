@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -24,6 +23,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -37,7 +38,7 @@ public class MainActivity extends Activity
     private AdView mAdView;
     private int mCurrentAct = Utils.EAT;
     private long exitTime = 0;
-    private Drawable mBg = null;
+    private Target mTarget = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +49,6 @@ public class MainActivity extends Activity
 //        mAdView.setAdListener(new ToastAdListener(this));
         mAdView.loadAd(new AdRequest.Builder().build());
 
-        initBackground();
-
         ItemFragment itemFragment = (ItemFragment) getFragmentManager().findFragmentById(R.id.left_fragment);
         itemFragment.setSelectedItem(mCurrentAct);
         setRightBackgroundByAction(mCurrentAct);
@@ -59,7 +58,6 @@ public class MainActivity extends Activity
     public void onResume(){
         super.onResume();
 
-        initBackground();
         setRightBackgroundByAction(mCurrentAct);
     }
 
@@ -228,56 +226,56 @@ public class MainActivity extends Activity
 
     }
 
-    private void setRightBackgroundByAction(int action) {
-        View rightView = getFragmentManager().findFragmentById(R.id.right_fragment).getView();
+    private void setRightBackgroundByAction(final int action) {
+        final View rightView = getFragmentManager().findFragmentById(R.id.right_fragment).getView();
         if (rightView != null) {
-            if(mBg!=null){
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+            boolean backGroundEnable = sharedPref.getBoolean(getString(R.string.pref_key_pic_path_enable), false);
+            if(backGroundEnable){
                 try{
-                    rightView.setBackground(mBg);
-                    rightView.getBackground().setAlpha(0x80);
+                    mTarget = new Target(){
+                        @Override
+                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                            rightView.setBackground(new BitmapDrawable(getResources(), bitmap));
+                            rightView.getBackground().setAlpha(0x80);
+                        }
+
+                        @Override
+                        public void onBitmapFailed(Drawable errorDrawable) {
+                            setDefaultBackground(rightView, action);
+                        }
+
+                        @Override
+                        public void onPrepareLoad(Drawable placeHolderDrawable) {
+                            setDefaultBackground(rightView, action);
+                        }
+                    };
+                    Display display = getWindowManager().getDefaultDisplay();
+                    Point size = new Point();
+                    display.getSize(size);
+                    Picasso.with(MainActivity.this).load(getPicPath()).resize(size.x, size.y).into(mTarget);
+
                 }
                 catch(Exception e){
                     e.printStackTrace();
-                    rightView.setBackgroundResource(Utils.mBackgroundPics[action % Utils.mBackgroundPics.length]);
-                    rightView.getBackground().setAlpha(0x20);
+                    setDefaultBackground(rightView, action);
                 }
-            }else{
-                rightView.setBackgroundResource(Utils.mBackgroundPics[action % Utils.mBackgroundPics.length]);
-                rightView.getBackground().setAlpha(0x20);
             }
-
+            else
+            {
+                setDefaultBackground(rightView,action);
+            }
         }
     }
 
+    private void setDefaultBackground(View view, int action){
+        view.setBackgroundResource(Utils.mBackgroundPics[action % Utils.mBackgroundPics.length]);
+        view.getBackground().setAlpha(0x20);
+    }
     private String getPicPath(){
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         String path = sharedPref.getString(getString(R.string.pref_key_pic_path),"");
         return path;
     }
 
-    private void initBackground(){
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean backGroundEnable = sharedPref.getBoolean(getString(R.string.pref_key_pic_path_enable), false);
-        if(backGroundEnable) {
-            String picPath = getPicPath();
-            if (picPath.compareTo("") != 0) {
-                try {
-                    Display display = getWindowManager().getDefaultDisplay();
-                    Point size = new Point();
-                    display.getSize(size);
-                    Bitmap original = BitmapFactory.decodeFile(picPath);
-                    Bitmap b = Bitmap.createScaledBitmap(original, size.x, size.y, false);
-                    mBg = new BitmapDrawable(getResources(), b);
-                    original.recycle();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    mBg = null;
-                }
-            }
-        }
-        else{
-            mBg = null;
-        }
-
-    }
 }
