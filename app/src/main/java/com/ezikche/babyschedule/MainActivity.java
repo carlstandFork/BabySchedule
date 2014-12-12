@@ -253,7 +253,7 @@ public class MainActivity extends Activity
                     Display display = getWindowManager().getDefaultDisplay();
                     Point size = new Point();
                     display.getSize(size);
-                    Picasso.with(MainActivity.this).load(getPicPath()).resize(size.x, size.y).into(mTarget);
+                    Picasso.with(MainActivity.this).load(Utils.getPicPath()).resize(size.x, size.y).into(mTarget);
 
                 }
                 catch(Exception e){
@@ -272,10 +272,4 @@ public class MainActivity extends Activity
         view.setBackgroundResource(Utils.mBackgroundPics[action % Utils.mBackgroundPics.length]);
         view.getBackground().setAlpha(0x20);
     }
-    private String getPicPath(){
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String path = sharedPref.getString(getString(R.string.pref_key_pic_path),"");
-        return path;
-    }
-
 }

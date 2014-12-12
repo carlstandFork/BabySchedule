@@ -248,7 +248,7 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
                     Display display = getWindowManager().getDefaultDisplay();
                     Point size = new Point();
                     display.getSize(size);
-                    Picasso.with(DetailActivity.this).load(getPicPath()).resize(size.x, size.y).into(mTarget);
+                    Picasso.with(DetailActivity.this).load(Utils.getPicPath()).resize(size.x, size.y).into(mTarget);
 
                 }
                 catch(Exception e){
@@ -491,12 +491,6 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
     private String getPath(){
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         String path = sharedPref.getString(getString(R.string.pref_key_store_path), Utils.defaultPath);
-        return path;
-    }
-
-    private String getPicPath(){
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String path = sharedPref.getString(getString(R.string.pref_key_pic_path),"");
         return path;
     }
 }
