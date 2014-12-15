@@ -62,7 +62,7 @@
     <string name="file_not_readable">File system not readable</string>
     <string name="file_not_writable">File system not writable</string>
     <string name="illegal_data_format">Illegal data format</string>
-    <string name="default_dir_anme">BabySchedule</string>
+    <string name="default_dir_name">BabySchedule</string>
     <string name="invalid_dir">Invalid directory</string>
 
 

@@ -64,7 +64,7 @@
     <string name="file_not_readable">文件系统不可读</string>
     <string name="file_not_writable">文件系统不可写</string>
     <string name="illegal_data_format">时间数据格式非法</string>
-    <string name="default_dir_anme">BabySchedule</string>
+    <string name="default_dir_name">BabySchedule</string>
     <string name="invalid_dir">目录无效</string>
 
 

@@ -56,7 +56,7 @@ public class SettingsActivity extends PreferenceActivity implements DirectoryCho
         DirChooser.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference pref) {
-                mDialog = DirectoryChooserFragment.newInstance(getResources().getString(R.string.default_dir_anme), oldStorePath);
+                mDialog = DirectoryChooserFragment.newInstance(getResources().getString(R.string.default_dir_name), oldStorePath);
                 mDialog.show(getFragmentManager(), null);
                 return true;
             }
