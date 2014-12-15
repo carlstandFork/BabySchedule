@@ -3,7 +3,6 @@ package com.ezikche.babyschedule;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 
@@ -44,7 +43,6 @@ public class Utils extends Application{
     public static final int[] mBackgroundPics = new int[]{R.drawable.eat, R.drawable.poo,R.drawable.sleep};
 
     private static Utils mUtils = null;
-    private static Drawable mBg = null;
 
     @Override
     public void onCreate(){
@@ -270,7 +268,6 @@ public class Utils extends Application{
         double sum = 0;
         final ArrayList<String> bodys = new ArrayList<String>();
         String tmp;
-        int arraySize = 0;
         try {
             while ((tmp = buf.readLine()) != null) {
                 int pos = tmp.indexOf(":");

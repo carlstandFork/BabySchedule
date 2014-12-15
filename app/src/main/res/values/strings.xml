@@ -49,6 +49,7 @@
     <string name="nextday">Next day</string>
     <string name="prevday">Previous day</string>
     <string name="ok">OK</string>
+    <string name="add">Add</string>
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
     <string name="title_activity_detail">Detail</string>

@@ -205,10 +205,10 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
         }
     }
     @Override
-    public void onFragmentInteraction(String id, int position, View view)
+    public void onFragmentInteraction(String id, int position, View view, boolean longPress)
     {
         int pos = position % Utils.colors.length;
-        if(mCurrentAct != pos) {
+        if (mCurrentAct != pos) {
             mCurrentFileIndex = 0;
             mCurrentAct = pos;
         }

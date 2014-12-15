@@ -23,7 +23,7 @@ import java.util.List;
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class ItemFragment extends Fragment implements AbsListView.OnItemClickListener {
+public class ItemFragment extends Fragment implements AbsListView.OnItemClickListener, AbsListView.OnItemLongClickListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -87,7 +87,7 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
         mListView = (AbsListView) view.findViewById(android.R.id.list);
         mListView.setAdapter(mAdapter);
 
-        // Set OnItemClickListener so we can be notified on item clicks
+        mListView.setOnItemLongClickListener(this);
         mListView.setOnItemClickListener(this);
 
         return view;
@@ -117,8 +117,19 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
         if (null != mListener) {
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
-            mListener.onFragmentInteraction(mStringList.get(position), position, view);
+            mListener.onFragmentInteraction(mStringList.get(position), position, view, false);
         }
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        setSelectedItem(position);
+        if (null != mListener) {
+            // Notify the active callbacks interface (the activity, if the
+            // fragment is attached to one) that an item has been selected.
+            mListener.onFragmentInteraction(mStringList.get(position), position, view, true);
+        }
+        return true;
     }
 
     /**
@@ -151,7 +162,7 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        public void onFragmentInteraction(String id, int position, View view);
+        public void onFragmentInteraction(String id, int position, View view, boolean longPress);
     }
 
 }

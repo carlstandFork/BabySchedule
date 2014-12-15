@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Display;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.larswerkman.holocolorpicker.ColorPicker;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -33,7 +35,7 @@ import java.io.FileReader;
 
 
 public class MainActivity extends Activity
-        implements ItemFragment.OnFragmentInteractionListener {
+        implements ItemFragment.OnFragmentInteractionListener{
 
     private AdView mAdView;
     private int mCurrentAct = Utils.EAT;
@@ -218,12 +220,63 @@ public class MainActivity extends Activity
         return super.onKeyDown(keyCode, event);
     }
     @Override
-    public void onFragmentInteraction(String id, int position, View view) {
-        mCurrentAct = position % Utils.colors.length;
-        view.setBackgroundColor(Utils.colors[mCurrentAct]);
+    public void onFragmentInteraction(String id, int position, View view, boolean longPress) {
+        if(!longPress) {
+            mCurrentAct = position % Utils.colors.length;
+            view.setBackgroundColor(Utils.colors[mCurrentAct]);
 
-        setRightBackgroundByAction(mCurrentAct);
+            setRightBackgroundByAction(mCurrentAct);
+        }
+        else{
+            Toast.makeText(getApplicationContext(), "长按了No.："+String.valueOf(position), Toast.LENGTH_SHORT).show();
+            getDialog(position).show();
+        }
 
+    }
+
+    private AlertDialog getDialog(final int itemPos) {
+        //start Dialog to modify clicked line
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
+//        String[] actions = getResources().getStringArray(R.array.actions);
+//        dialogBuilder.setTitle(actions[mCurrentAct]);
+//                .setMessage(messages[mCurrentAct]);
+
+        LayoutInflater inflater = MainActivity.this.getLayoutInflater();
+        View layout = inflater.inflate(R.layout.dialog_modify_action, null);
+
+
+        final ColorPicker cPicker =  (ColorPicker)layout.findViewById(R.id.colorPicker);
+        cPicker.setOldCenterColor(Utils.colors[itemPos]);
+        cPicker.setColor(Utils.colors[itemPos]);
+
+
+        dialogBuilder.setView(layout);
+        String strPositiveBtn;
+        if (itemPos >= Utils.colors.length){
+            strPositiveBtn = getResources().getString(R.string.ok);
+        }
+        else{
+            strPositiveBtn = getResources().getString(R.string.add);
+        }
+
+        dialogBuilder.setPositiveButton(strPositiveBtn, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+            }
+        });
+        if(itemPos >= Utils.colors.length) {
+            dialogBuilder.setNeutralButton(R.string.delete, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+
+                }
+            });
+        }
+        dialogBuilder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+
+        return dialogBuilder.create();
     }
 
     private void setRightBackgroundByAction(final int action) {
