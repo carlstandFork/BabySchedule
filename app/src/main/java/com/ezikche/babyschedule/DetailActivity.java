@@ -460,7 +460,7 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
     }
 
     private File getLatestStorageFile(String dir) {
-        File f = new File(getPath()+File.separator+dir);
+        File f = new File(Utils.getPath()+File.separator+dir);
         if(f.exists()) {
             mSortedFiles = f.listFiles();
             if(null != mSortedFiles)
@@ -488,9 +488,4 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
         return null;
     }
 
-    private String getPath(){
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String path = sharedPref.getString(getString(R.string.pref_key_store_path), Utils.defaultPath);
-        return path;
-    }
 }

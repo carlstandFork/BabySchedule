@@ -284,6 +284,25 @@ public class Utils extends Application{
         return sum/bodys.size();
     }
 
+    public static List<String> initItemList(){
+        List<String> list = new ArrayList<String>(Arrays.asList(mUtils.getApplicationContext().getResources().getStringArray(R.array.actions)));
+        File inFile = getStorageFile(Utils.getPath(),"config","actions");
+        try {
+            BufferedReader buf = new BufferedReader(new FileReader(inFile));
+            String tmp;
+            while ((tmp = buf.readLine()) != null) {
+                String name = tmp.substring(0, tmp.indexOf(":"));
+                if(!list.contains(name)) {
+                    list.add(name);
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        list.add("");
+        return list;
+    }
+
     public static String getPath(){
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mUtils.getApplicationContext());
         String path = sharedPref.getString(mUtils.getApplicationContext().getResources().getString(R.string.pref_key_store_path),Utils.defaultPath);

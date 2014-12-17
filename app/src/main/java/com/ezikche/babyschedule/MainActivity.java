@@ -18,7 +18,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.NumberPicker;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -148,9 +150,9 @@ public class MainActivity extends Activity
                 TimePicker TP = (TimePicker) (MainActivity.this.findViewById(R.id.timePicker));
                 String date = DP.getYear() + "." + String.format("%02d", DP.getMonth() + 1) + "." + String.format("%02d", DP.getDayOfMonth());
                 String time = String.format("%02d", TP.getCurrentHour()) + "." + String.format("%02d", TP.getCurrentMinute());
-                String[] fileNames = getResources().getStringArray(R.array.folderName);
+                String[] folderNames = getResources().getStringArray(R.array.folderName);
                 try{
-                    BufferedReader buf = new BufferedReader(new FileReader(Utils.getStorageFile(Utils.getPath(),fileNames[mCurrentAct], date)));
+                    BufferedReader buf = new BufferedReader(new FileReader(Utils.getStorageFile(Utils.getPath(),folderNames[mCurrentAct], date)));
                     String tmp;
                     while ((tmp = buf.readLine()) != null) {
                         int pos = tmp.indexOf(":");
@@ -173,7 +175,7 @@ public class MainActivity extends Activity
                 Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
 //              save to the file
                 if (Utils.isExternalStorageWritable()) {
-                    File outFile = Utils.getStorageFile(Utils.getPath(),fileNames[mCurrentAct], date);
+                    File outFile = Utils.getStorageFile(Utils.getPath(),folderNames[mCurrentAct], date);
                     try {
                         FileOutputStream fos = new FileOutputStream(outFile, true);
                         fos.write(message.getBytes());
@@ -221,20 +223,27 @@ public class MainActivity extends Activity
     }
     @Override
     public void onFragmentInteraction(String id, int position, View view, boolean longPress) {
+        String text = String.valueOf(((TextView) view).getText());
+        boolean isPlusItem = text.isEmpty();
         if(!longPress) {
-            mCurrentAct = position % Utils.colors.length;
-            view.setBackgroundColor(Utils.colors[mCurrentAct]);
+            if(isPlusItem){
+                getDialog(position,false).show();
+            }else {
+                mCurrentAct = position % Utils.colors.length;
+                view.setBackgroundColor(Utils.colors[mCurrentAct]);
 
-            setRightBackgroundByAction(mCurrentAct);
+                setRightBackgroundByAction(mCurrentAct);
+            }
         }
         else{
-            Toast.makeText(getApplicationContext(), "长按了No.："+String.valueOf(position), Toast.LENGTH_SHORT).show();
-            getDialog(position).show();
+            if(!isPlusItem && position >= Utils.colors.length ) {
+                Toast.makeText(getApplicationContext(), "长按了No.：" + String.valueOf(position) + text, Toast.LENGTH_SHORT).show();
+                getDialog(position, true).show();
+            }
         }
-
     }
 
-    private AlertDialog getDialog(final int itemPos) {
+    private AlertDialog getDialog(final int itemPos, boolean removable) {
         //start Dialog to modify clicked line
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
 //        String[] actions = getResources().getStringArray(R.array.actions);
@@ -246,24 +255,40 @@ public class MainActivity extends Activity
 
 
         final ColorPicker cPicker =  (ColorPicker)layout.findViewById(R.id.colorPicker);
-        cPicker.setOldCenterColor(Utils.colors[itemPos]);
-        cPicker.setColor(Utils.colors[itemPos]);
+        final EditText nameField = (EditText)layout.findViewById(R.id.actionName);
+        final EditText unitField = (EditText)layout.findViewById(R.id.actionUnit);
 
+        cPicker.setOldCenterColor(Utils.colors[itemPos%Utils.colors.length]);
+        cPicker.setColor(Utils.colors[itemPos%Utils.colors.length]);
 
         dialogBuilder.setView(layout);
-        String strPositiveBtn;
-        if (itemPos >= Utils.colors.length){
-            strPositiveBtn = getResources().getString(R.string.ok);
-        }
-        else{
-            strPositiveBtn = getResources().getString(R.string.add);
-        }
 
-        dialogBuilder.setPositiveButton(strPositiveBtn, new DialogInterface.OnClickListener() {
+        dialogBuilder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
+                String name = String.valueOf(nameField.getText());
+                String unit = String.valueOf(unitField.getText());
+                if(!name.trim().isEmpty() && !unit.trim().isEmpty()){
+                    int color = cPicker.getColor();
+                    File configFile = Utils.getStorageFile(Utils.getPath(),"config","actions");
+                    if(configFile != null){
+                        try {
+                            FileOutputStream fos = new FileOutputStream(configFile, true);
+                            String newLine = name + ":" + unit + ":" + String.valueOf(color)+"\n";
+                            fos.write(newLine.getBytes());
+                            fos.close();
+
+                            refreshItemList();
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                else{
+                    Toast.makeText(getApplicationContext(), "名字和单位不能为空", Toast.LENGTH_SHORT).show();
+                }
             }
         });
-        if(itemPos >= Utils.colors.length) {
+        if(removable) {
             dialogBuilder.setNeutralButton(R.string.delete, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
 
@@ -277,6 +302,12 @@ public class MainActivity extends Activity
         });
 
         return dialogBuilder.create();
+    }
+
+    private void refreshItemList(){
+        ItemFragment itemFragment = (ItemFragment) getFragmentManager().findFragmentById(R.id.left_fragment);
+        itemFragment.setList(Utils.initItemList());
+        itemFragment.refresh();
     }
 
     private void setRightBackgroundByAction(final int action) {

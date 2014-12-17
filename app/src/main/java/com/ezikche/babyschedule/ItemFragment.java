@@ -10,8 +10,6 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -74,9 +72,22 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
         }
 
         // TODO: Change Adapter to display your content
-        mStringList = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.actions)));
-        mStringList.add("");
+        mStringList = Utils.initItemList();
         mAdapter = new ItemListAdapter<String>(getActivity(),R.layout.list_text, mStringList);
+    }
+
+    public List<String> getList(){
+        return mStringList;
+    }
+
+    public void setList(List<String> list){
+        mStringList = list;
+    }
+
+    public void refresh(){
+        mAdapter = new ItemListAdapter<String>(getActivity(),R.layout.list_text, mStringList);
+        mListView.setAdapter(mAdapter);
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -129,8 +140,9 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
             mListener.onFragmentInteraction(mStringList.get(position), position, view, true);
+            return true;
         }
-        return true;
+        return false;
     }
 
     /**
