@@ -80,10 +80,18 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
             e.printStackTrace();
         }
         mDetector = new GestureDetectorCompat(this,this);
+
+        refreshItemList();
+
         setTextViewByAct(mCurrentAct);
         setRightBackgroundByAction(mCurrentAct);
     }
 
+    private void refreshItemList(){
+        ItemFragment itemFragment = (ItemFragment) getFragmentManager().findFragmentById(R.id.left_fragment);
+        itemFragment.setList(Utils.initItemList(false));
+        itemFragment.refresh();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -207,7 +215,7 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
     @Override
     public void onFragmentInteraction(String id, int position, View view, boolean longPress)
     {
-        int pos = position % Utils.colors.length;
+        int pos = position;
         if (mCurrentAct != pos) {
             mCurrentFileIndex = 0;
             mCurrentAct = pos;
@@ -266,8 +274,8 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
     private void setTextViewByAct(int position) {
         if (Utils.isExternalStorageReadable()) {
             ListView rightView = (ListView) findViewById(R.id.listView);
-            File inFile = getLatestStorageFile(mFolderNames[position]);
             try {
+                File inFile = getLatestStorageFile(mFolderNames[position]);
                 String[] actionUnits = getResources().getStringArray(R.array.actions_units);
                 String value = String.valueOf((Utils.getYValue(mFolderNames[position], inFile)));
                 getActionBar().setTitle(inFile.getName() + " " + value + actionUnits[position]);
@@ -277,9 +285,11 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
                 ArrayAdapter adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, new ArrayList<String>());
                 rightView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
+                return;
             }
 
             try {
+                File inFile = getLatestStorageFile(mFolderNames[position]);
                 BufferedReader buf = new BufferedReader(new FileReader(inFile));
 
                 String tmp;
@@ -374,7 +384,7 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
         final NumberPicker nPicker = (NumberPicker) layout.findViewById(R.id.numberPicker);
         tPicker.setCurrentHour(hour);
         tPicker.setCurrentMinute(min);
-        tPicker.setBackgroundColor(Utils.colors[mCurrentAct]);
+        tPicker.setBackgroundColor(Utils.getBackgroundColor(mCurrentAct));
         tPicker.setAlpha(0.5f);
 
         nPicker.setMinValue(0);
@@ -382,7 +392,7 @@ public class DetailActivity extends Activity implements ItemFragment.OnFragmentI
         nPicker.setDisplayedValues(displayedValues);
         nPicker.setValue(valuePos);
         nPicker.setWrapSelectorWheel(false);
-        nPicker.setBackgroundColor(Utils.colors[mCurrentAct]);
+        nPicker.setBackgroundColor(Utils.getBackgroundColor(mCurrentAct));
         nPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
         nPicker.setAlpha(0.5f);
 

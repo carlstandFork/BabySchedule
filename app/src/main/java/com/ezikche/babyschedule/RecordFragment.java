@@ -11,13 +11,13 @@ import android.view.ViewGroup;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link EatFragment.OnRightFragmentInteractionListener} interface
+ * {@link RecordFragment.OnRightFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link EatFragment#newInstance} factory method to
+ * Use the {@link RecordFragment#newInstance} factory method to
  * create an instance of this fragment.
  *
  */
-public class EatFragment extends Fragment {
+public class RecordFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -35,11 +35,11 @@ public class EatFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment EatFragment.
+     * @return A new instance of fragment RecordFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static EatFragment newInstance(String param1, String param2) {
-        EatFragment fragment = new EatFragment();
+    public static RecordFragment newInstance(String param1, String param2) {
+        RecordFragment fragment = new RecordFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -47,7 +47,7 @@ public class EatFragment extends Fragment {
         return fragment;
     }
 
-    public EatFragment() {
+    public RecordFragment() {
         // Required empty public constructor
     }
 

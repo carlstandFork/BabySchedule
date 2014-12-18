@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:id="@+id/eat_fragment"
     android:orientation="vertical"
-    tools:context="com.ezikche.babyschedule.EatFragment"
+    tools:context="com.ezikche.babyschedule.RecordFragment"
     android:clickable="false">
 
     <DatePicker

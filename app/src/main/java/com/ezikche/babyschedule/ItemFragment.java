@@ -72,7 +72,7 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
         }
 
         // TODO: Change Adapter to display your content
-        mStringList = Utils.initItemList();
+        mStringList = Utils.initItemList(true);
         mAdapter = new ItemListAdapter<String>(getActivity(),R.layout.list_text, mStringList);
     }
 

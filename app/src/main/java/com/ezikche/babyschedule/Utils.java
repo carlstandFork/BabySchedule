@@ -30,12 +30,10 @@ public class Utils extends Application{
     public static final int SLEEP = 2;
     public static final int WEIGHT = 3;
     public static final int HEIGHT = 4;
-    public static final int TEMPERATURE = 5;
 
     public static final int EAT_DEFAULT = 9;
     public static final int WEIGHT_DEFAULT = 60;
     public static final int HEIGHT_DEFAULT = 40;
-    public static final int TEMPERATURE_DEFAULT = 20;
 
     public static String defaultPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath();
 
@@ -63,7 +61,7 @@ public class Utils extends Application{
     }
 
     public static String[] getDisplayValuesByAct(int act) {
-        int NUMBER_OF_VALUES = 0;
+        int NUMBER_OF_VALUES = 1;
         float PICKER_RANGE = 0;
         float START_VALUE = 0;
         switch (act) {
@@ -89,11 +87,6 @@ public class Utils extends Application{
                 PICKER_RANGE = 0.5f;
                 START_VALUE = 40.0f;
                 break;
-            case TEMPERATURE:
-                NUMBER_OF_VALUES = 100;
-                PICKER_RANGE = 0.1f;
-                START_VALUE = 35.0f;
-                break;
             default:
                 break;
         }
@@ -103,7 +96,11 @@ public class Utils extends Application{
             for (int i = 0; i < NUMBER_OF_VALUES; ++i)
                 displayedValues[i] = new DecimalFormat("0.0").format(START_VALUE + PICKER_RANGE * (i + 1));
         }
-        else if(act == SLEEP || act == WEIGHT || act == HEIGHT || act == TEMPERATURE){
+        else if(act == SLEEP || act == WEIGHT || act == HEIGHT){
+            for (int i = 0; i < NUMBER_OF_VALUES; ++i)
+                displayedValues[i] =new DecimalFormat("0.0").format(START_VALUE + PICKER_RANGE * (i));
+        }
+        else{
             for (int i = 0; i < NUMBER_OF_VALUES; ++i)
                 displayedValues[i] =new DecimalFormat("0.0").format(START_VALUE + PICKER_RANGE * (i));
         }
@@ -284,7 +281,7 @@ public class Utils extends Application{
         return sum/bodys.size();
     }
 
-    public static List<String> initItemList(){
+    public static List<String> initItemList(boolean withPlus){
         List<String> list = new ArrayList<String>(Arrays.asList(mUtils.getApplicationContext().getResources().getStringArray(R.array.actions)));
         File inFile = getStorageFile(Utils.getPath(),"config","actions");
         try {
@@ -299,8 +296,14 @@ public class Utils extends Application{
         }catch (Exception e){
             e.printStackTrace();
         }
-        list.add("");
+        if(withPlus)
+            list.add("");
+
         return list;
+    }
+
+    public static File getConfigFile(){
+        return getStorageFile(Utils.getPath(), "config", "actions");
     }
 
     public static String getPath(){
@@ -313,5 +316,83 @@ public class Utils extends Application{
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mUtils.getApplicationContext());
         String path = sharedPref.getString(mUtils.getApplicationContext().getResources().getString(R.string.pref_key_pic_path),"");
         return path;
+    }
+
+    public static int getBackgroundColor(int position){
+        File f = getConfigFile();
+        ArrayList<Integer> additionalColor = new ArrayList<Integer>();
+        try {
+            BufferedReader buf = new BufferedReader(new FileReader(f));
+
+            String tmp;
+            while ((tmp = buf.readLine()) != null) {
+                int pos = tmp.lastIndexOf(":");
+                additionalColor.add(Integer.parseInt(tmp.substring(pos + 1)));
+            }
+            buf.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        if(position>=colors.length){
+            position = position - colors.length;
+            return additionalColor.get(position% additionalColor.size());
+        }
+        else
+        {
+            return colors[position%colors.length];
+        }
+    }
+
+    public static String getTitle(int position){
+        File f = getConfigFile();
+        String[] actions = mUtils.getApplicationContext().getResources().getStringArray(R.array.actions);
+        ArrayList<String> additionalAction = new ArrayList<String>();
+        try {
+            BufferedReader buf = new BufferedReader(new FileReader(f));
+
+            String tmp;
+            while ((tmp = buf.readLine()) != null) {
+                int pos = tmp.indexOf(":");
+                additionalAction.add(tmp.substring(0, pos));
+            }
+            buf.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        if(position>=actions.length){
+            position = position - actions.length;
+            return additionalAction.get(position% additionalAction.size());
+        }
+        else
+        {
+            return actions[position%actions.length];
+        }
+    }
+
+    public static String getMessage(int position){
+        File f = getConfigFile();
+        String[] messages = mUtils.getApplicationContext().getResources().getStringArray(R.array.dialogMsg);
+        ArrayList<String> additionalUnit = new ArrayList<String>();
+        try {
+            BufferedReader buf = new BufferedReader(new FileReader(f));
+
+            String tmp;
+            while ((tmp = buf.readLine()) != null) {
+                int pos1 = tmp.indexOf(":");
+                int pos2 = tmp.indexOf(":",pos1+1);
+                additionalUnit.add(tmp.substring(pos1+1, pos2));
+            }
+            buf.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        if(position>=messages.length){
+            position = position - messages.length;
+            return additionalUnit.get(position% additionalUnit.size());
+        }
+        else
+        {
+            return messages[position%messages.length];
+        }
     }
 }

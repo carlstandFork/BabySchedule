@@ -26,6 +26,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.TreeMultimap;
 import com.larswerkman.holocolorpicker.ColorPicker;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -34,6 +36,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.util.ArrayList;
 
 
 public class MainActivity extends Activity
@@ -112,10 +115,8 @@ public class MainActivity extends Activity
     public void onButtonNextPressed(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        String[] actions = getResources().getStringArray(R.array.actions);
-        String[] messages = getResources().getStringArray(R.array.dialogMsg);
-        builder.setTitle(actions[mCurrentAct])
-                .setMessage(messages[mCurrentAct]);
+        builder.setTitle(Utils.getTitle(mCurrentAct))
+                .setMessage(Utils.getMessage(mCurrentAct));
 
         final NumberPicker picker = new ColorNumberPicker(getApplicationContext());
 
@@ -134,12 +135,9 @@ public class MainActivity extends Activity
             case Utils.HEIGHT:{
                 picker.setValue(Utils.HEIGHT_DEFAULT);
             }break;
-            case Utils.TEMPERATURE:{
-                picker.setValue(Utils.TEMPERATURE_DEFAULT);
-            }break;
         }
         picker.setWrapSelectorWheel(false);
-        picker.setBackgroundColor(Utils.colors[mCurrentAct]);
+        picker.setBackgroundColor(Utils.getBackgroundColor(mCurrentAct));
         picker.setAlpha(0.5f);
         picker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS);
         builder.setView(picker);
@@ -175,8 +173,8 @@ public class MainActivity extends Activity
                 Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
 //              save to the file
                 if (Utils.isExternalStorageWritable()) {
-                    File outFile = Utils.getStorageFile(Utils.getPath(),folderNames[mCurrentAct], date);
                     try {
+                        File outFile = Utils.getStorageFile(Utils.getPath(),folderNames[mCurrentAct], date);
                         FileOutputStream fos = new FileOutputStream(outFile, true);
                         fos.write(message.getBytes());
                         fos.close();
@@ -227,10 +225,10 @@ public class MainActivity extends Activity
         boolean isPlusItem = text.isEmpty();
         if(!longPress) {
             if(isPlusItem){
-                getDialog(position,false).show();
+                getDialog(position,text, false).show();
             }else {
-                mCurrentAct = position % Utils.colors.length;
-                view.setBackgroundColor(Utils.colors[mCurrentAct]);
+                mCurrentAct = position;
+                view.setBackgroundColor(Utils.getBackgroundColor(mCurrentAct));
 
                 setRightBackgroundByAction(mCurrentAct);
             }
@@ -238,12 +236,12 @@ public class MainActivity extends Activity
         else{
             if(!isPlusItem && position >= Utils.colors.length ) {
                 Toast.makeText(getApplicationContext(), "长按了No.：" + String.valueOf(position) + text, Toast.LENGTH_SHORT).show();
-                getDialog(position, true).show();
+                getDialog(position, text, true).show();
             }
         }
     }
 
-    private AlertDialog getDialog(final int itemPos, boolean removable) {
+    private AlertDialog getDialog(final int itemPos, final String name, boolean removable) {
         //start Dialog to modify clicked line
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
 //        String[] actions = getResources().getStringArray(R.array.actions);
@@ -267,34 +265,23 @@ public class MainActivity extends Activity
             public void onClick(DialogInterface dialog, int id) {
                 String name = String.valueOf(nameField.getText());
                 String unit = String.valueOf(unitField.getText());
-                if(!name.trim().isEmpty() && !unit.trim().isEmpty()){
-                    int color = cPicker.getColor();
-                    File configFile = Utils.getStorageFile(Utils.getPath(),"config","actions");
-                    if(configFile != null){
-                        try {
-                            FileOutputStream fos = new FileOutputStream(configFile, true);
-                            String newLine = name + ":" + unit + ":" + String.valueOf(color)+"\n";
-                            fos.write(newLine.getBytes());
-                            fos.close();
-
-                            refreshItemList();
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                else{
-                    Toast.makeText(getApplicationContext(), "名字和单位不能为空", Toast.LENGTH_SHORT).show();
+                int color = cPicker.getColor();
+                if(addActionInFile(name,unit,color)){
+                    refreshItemList();
                 }
             }
         });
+
         if(removable) {
             dialogBuilder.setNeutralButton(R.string.delete, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-
+                    if(removeActionInFile(name)) {
+                        refreshItemList();
+                    }
                 }
             });
         }
+
         dialogBuilder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 dialog.cancel();
@@ -304,9 +291,96 @@ public class MainActivity extends Activity
         return dialogBuilder.create();
     }
 
+    private boolean addActionInFile(String name, String unit, int color){
+        if(!name.trim().isEmpty() && !unit.trim().isEmpty()){
+            File f = Utils.getConfigFile();
+            ArrayList<String> titles = new ArrayList<String>();
+            try {
+                BufferedReader buf = new BufferedReader(new FileReader(f));
+
+                String tmp;
+                while ((tmp = buf.readLine()) != null) {
+                    int pos = tmp.indexOf(":");
+                    titles.add(tmp.substring(0, pos));
+                }
+                buf.close();
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+
+            int index = titles.indexOf(name);
+            if(index == -1){
+                try {
+                    FileOutputStream fos = new FileOutputStream(f, true);
+                    String newLine = name + ":" + unit + ":" + String.valueOf(color)+"\n";
+                    fos.write(newLine.getBytes());
+                    fos.close();
+                    return true;
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+            else{
+                Toast.makeText(getApplicationContext(), "名字不能重复", Toast.LENGTH_SHORT).show();
+            }
+        }
+        else{
+            Toast.makeText(getApplicationContext(), "名字和单位不能为空", Toast.LENGTH_SHORT).show();
+        }
+        return false;
+    }
+
+    private boolean removeActionInFile(String name){
+        try {
+            File f = Utils.getConfigFile();
+            BufferedReader buf = new BufferedReader(new FileReader(f));
+
+            String tmp;
+            Multimap<String, String> TBs = TreeMultimap.create();
+            while ((tmp = buf.readLine()) != null) {
+                int pos = tmp.indexOf(":");
+                TBs.put(tmp.substring(0, pos), tmp.substring(pos + 1) + "\n");
+            }
+
+            ArrayList<String> titles = new ArrayList<String>(TBs.keys());
+            ArrayList<String> bodys = new ArrayList<String>(TBs.values());
+            buf.close();
+
+            int index = titles.indexOf(name);
+            if(index!= -1){
+                titles.remove(index);
+                bodys.remove(index);
+                writeFile(f, titles, bodys);
+                return true;
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private void writeFile(File f, ArrayList<String> titles, ArrayList<String> bodys){
+        try{
+        FileOutputStream fos = new FileOutputStream(f, false);
+
+        for (int i = 0; i < titles.size(); ++i) {
+            try {
+                String message = titles.get(i) + ":" + bodys.get(i);
+                fos.write(message.getBytes());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        fos.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
     private void refreshItemList(){
         ItemFragment itemFragment = (ItemFragment) getFragmentManager().findFragmentById(R.id.left_fragment);
-        itemFragment.setList(Utils.initItemList());
+        itemFragment.setList(Utils.initItemList(true));
         itemFragment.refresh();
     }
 
