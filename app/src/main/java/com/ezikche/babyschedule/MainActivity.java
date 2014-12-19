@@ -255,9 +255,12 @@ public class MainActivity extends Activity
         final ColorPicker cPicker =  (ColorPicker)layout.findViewById(R.id.colorPicker);
         final EditText nameField = (EditText)layout.findViewById(R.id.actionName);
         final EditText unitField = (EditText)layout.findViewById(R.id.actionUnit);
-
-        cPicker.setOldCenterColor(Utils.colors[itemPos%Utils.colors.length]);
-        cPicker.setColor(Utils.colors[itemPos%Utils.colors.length]);
+        if(removable){
+            nameField.setText(name);
+            unitField.setText(Utils.getMessage(itemPos));
+        }
+        cPicker.setOldCenterColor(Utils.getBackgroundColor(itemPos));
+        cPicker.setColor(Utils.getBackgroundColor(itemPos));
 
         dialogBuilder.setView(layout);
 
@@ -310,6 +313,45 @@ public class MainActivity extends Activity
 
             int index = titles.indexOf(name);
             if(index == -1){
+                try {
+                    FileOutputStream fos = new FileOutputStream(f, true);
+                    String newLine = name + ":" + unit + ":" + String.valueOf(color)+"\n";
+                    fos.write(newLine.getBytes());
+                    fos.close();
+                    return true;
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+            else{
+                Toast.makeText(getApplicationContext(), "名字不能重复", Toast.LENGTH_SHORT).show();
+            }
+        }
+        else{
+            Toast.makeText(getApplicationContext(), "名字和单位不能为空", Toast.LENGTH_SHORT).show();
+        }
+        return false;
+    }
+
+    private boolean modifyActionInFile(String name, String unit, int color){
+        if(!name.trim().isEmpty() && !unit.trim().isEmpty()){
+            File f = Utils.getConfigFile();
+            ArrayList<String> titles = new ArrayList<String>();
+            try {
+                BufferedReader buf = new BufferedReader(new FileReader(f));
+
+                String tmp;
+                while ((tmp = buf.readLine()) != null) {
+                    int pos = tmp.indexOf(":");
+                    titles.add(tmp.substring(0, pos));
+                }
+                buf.close();
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+
+            int index = titles.indexOf(name);
+            if(index != -1){
                 try {
                     FileOutputStream fos = new FileOutputStream(f, true);
                     String newLine = name + ":" + unit + ":" + String.valueOf(color)+"\n";
