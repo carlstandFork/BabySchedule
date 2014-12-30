@@ -42,7 +42,7 @@ public abstract class AbstractChart {
     public void addXYSeriesByTime(XYMultipleSeriesDataset dataset, String[] titles, List<Date[]> xValues,
                             List<double[]> yValues, int scale) {
         int length = titles.length;
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < length; ++i) {
             NewTimeSeries series = new NewTimeSeries(titles[i],scale);
             Date[] xV = xValues.get(i);
             double[] yV = yValues.get(i);
