@@ -235,7 +235,7 @@ public class MainActivity extends Activity
         }
         else{
             if(!isPlusItem && position >= Utils.colors.length ) {
-                Toast.makeText(getApplicationContext(), "长按了No.：" + String.valueOf(position) + text, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(), "长按了No.：" + String.valueOf(position) + text, Toast.LENGTH_SHORT).show();
                 getDialog(position, text, true).show();
             }
         }
