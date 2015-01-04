@@ -324,7 +324,7 @@ public class MainActivity extends Activity
                 }
             }
             else{
-                Toast.makeText(getApplicationContext(), "名字不能重复", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "名字重复", Toast.LENGTH_SHORT).show();
             }
         }
         else{
