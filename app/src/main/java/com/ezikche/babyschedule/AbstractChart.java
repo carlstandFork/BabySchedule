@@ -95,7 +95,7 @@ public abstract class AbstractChart {
         renderer.setPointSize(5f);
         renderer.setMargins(new int[]{topMargin, 80, 50, 60});
         int length = colors.length;
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < length; ++i) {
             XYSeriesRenderer r = new XYSeriesRenderer();
             r.setColor(colors[i]);
             r.setPointStyle(styles[i]);
